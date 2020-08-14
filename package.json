@@ -1,0 +1,19 @@
+{
+  "name": "crazystormrt",
+  "version": "1.0.0",
+  "description": "A runtime for crarzystorm config in ver 1.01 .",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ComradeFu/crazystormRT.git"
+  },
+  "author": "fuguangze",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ComradeFu/crazystormRT/issues"
+  },
+  "homepage": "https://github.com/ComradeFu/crazystormRT#readme"
+}
