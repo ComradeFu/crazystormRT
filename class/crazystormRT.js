@@ -8,19 +8,20 @@
  * 会对外提供一个类：
  * 1、子弹View层基类（用来沟通view层跟里面逻辑层的关系）
  */
-export default class CrazyStormRT 
+const CrazyConfig = require("./CrazyConfig")
+class CrazyStormRT 
 {
     constructor(config)
     {
-        if (config)
-            this.load(config)
+        this.config = new CrazyConfig(config)
 
+        //开始初始化
+        this.load()
     }
 
-    //从配置文件load入。配置文件见开发参考文档 开发者文档.txt
-    load(config)
+    //从配置中load入
+    load()
     {
-        //
         
     }
 
@@ -30,3 +31,5 @@ export default class CrazyStormRT
 
     }
 }
+
+module.exports = CrazyStormRT
