@@ -9,9 +9,10 @@ module.exports = class CrazyConfig
         this.desc = ""
 
         //中心点信息
-        this.center = {}
-        this.layers = {} //配置有关的layers信息
-        
+        this.center = {
+            layers = {}
+        }
+
         //总帧数
         this.total_frame = 0
 
@@ -112,7 +113,7 @@ module.exports = class CrazyConfig
         // this.load_layer_rebound_borad(layer, lines)
         // this.load_layer_force_field(layer, lines)
 
-        this.layers[id] = layer
+        this.center.layers[id] = layer
     }
 
     //加载某一个 layer 的子弹发射器
