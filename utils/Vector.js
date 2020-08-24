@@ -19,6 +19,10 @@ module.exports = class Vector
         this.x = r * Math.cos(angle);
         this.y = r * Math.sin(angle);
     }
+    getAngle()
+    {
+        return Math.atan2(this.y, this.x)
+    }
     add(vector)
     {
         this.x = this.x + vector.x
@@ -49,6 +53,20 @@ module.exports = class Vector
     dotProduct(vector)
     {
         return this.x * vector.x + this.y * vector.y
+    }
+
+    hadamardProduct(vector)
+    {
+        this.x *= vector.x
+        this.y *= vector.y
+    }
+
+    hadamardProductNew(vector)
+    {
+        let new_vec = this.clone()
+        new_vec.hadamardProduct(vector)
+
+        return new_vec
     }
 
     rotate(angle)

@@ -20,6 +20,11 @@ module.exports = class CrazyConditionBase
         this.regist_group_event()
     }
 
+    static get_name()
+    {
+        return undefined
+    }
+
     //获取对应的事件名称
     get_concert_event_names()
     {

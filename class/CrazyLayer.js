@@ -5,9 +5,9 @@ const CrazyObject = require("./CrazyObect")
 const CrazyBulletEmmiter = require("./CrazyBulletEmmiter")
 module.exports = class CrazyLayer extends CrazyObject
 {
-    constructor(config)
+    constructor(rt, config)
     {
-        super(config)
+        super(rt, config)
         this.name = config.name
         
         this.bullet_emitters = {}
@@ -18,12 +18,16 @@ module.exports = class CrazyLayer extends CrazyObject
 
     load_bullet_emmiter(config)
     {
-        let bullet_emmiters = config.bullet_emmiters
+        let bullet_emmiters = config.bullet_emitters
 
         for(let id in bullet_emmiters)
         {
+            let bullet_emmiter = bullet_emmiters[id]
+
             let emmiter = new CrazyBulletEmmiter(this.rt, bullet_emmiter)
-            this.bullet_emitters[emmiter.id] = emmiter
+            this.bullet_emitters[id] = emmiter
+
+            this.add_child(emmiter)
         }
     }
 }

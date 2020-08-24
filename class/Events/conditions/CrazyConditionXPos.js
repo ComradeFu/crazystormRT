@@ -11,6 +11,11 @@ module.exports = class CrazyConditionXPos extends CrazyConditionBase
         return ["tick"]
     }
 
+    static get_name()
+    {
+        return "X坐标"
+    }
+
     //获取比较的值
     get_compare_val()
     {

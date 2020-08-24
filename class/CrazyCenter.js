@@ -1,12 +1,13 @@
 /**
  * crazy storm  的center层
  */
+const CrazyObject = require("./CrazyObect")
 const CrazyLayer = require("./CrazyLayer")
-module.exports = class CrazyCenter
+module.exports = class CrazyCenter extends CrazyObject
 {
-    constructor(config)
+    constructor(rt, config)
     {
-        super(config)
+        super(rt, config)
         this.name = config.name
 
         //初始化自己的各种小组件
@@ -23,7 +24,7 @@ module.exports = class CrazyCenter
             let conf_layer = conf_layers[id]
             let layer = new CrazyLayer(this.rt, conf_layer)
 
-            this.layers[layer.id] = layer
+            this.layers[id] = layer
             this.add_child(layer)
         }
     }

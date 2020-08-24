@@ -11,6 +11,11 @@ module.exports = class CrazyConditionCurFrame extends CrazyConditionBase
         return ["tick"]
     }
 
+    static get_name()
+    {
+        return "当前帧"
+    }
+
     //获取比较的值
     get_compare_val()
     {

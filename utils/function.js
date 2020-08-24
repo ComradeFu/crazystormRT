@@ -1,4 +1,4 @@
-let safe_call = global.safe_call = function(func, ...args)
+module.exports.safe_call = function(func, ...args)
 {
     try
     {
@@ -9,3 +9,18 @@ let safe_call = global.safe_call = function(func, ...args)
         global.console.error(e)
     }
 }
+
+//左闭右开区间
+module.exports.random = function random(min, max)
+{
+    let rand = Math.random()
+    let interval = max - min
+    if (interval == 0)
+    {
+        return min;
+    }
+    rand = (Math.floor(rand * 100000) % interval) + min
+
+    return rand
+}
+

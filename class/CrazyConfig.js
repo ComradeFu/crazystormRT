@@ -10,7 +10,7 @@ module.exports = class CrazyConfig
 
         //中心点信息
         this.center = {
-            layers = {}
+            layers : {}
         }
 
         //总帧数
@@ -76,11 +76,11 @@ module.exports = class CrazyConfig
         let center = this.center
 
         let items = line.split(",")
-        center.pos = [items[0], items[1]]
-        center.speed = items[2]
-        center.speed_angle = items[3]
-        center.speed_acc = items[4]
-        center.speed_acc_angle = items[5]
+        center.pos = [Number(items[0]), Number(items[1])]
+        center.speed = Number(items[2])
+        center.speed_angle = Number(items[3])
+        center.speed_acc = Number(items[4])
+        center.speed_acc_angle = Number(items[5])
     }
 
     //加载全部帧信息
@@ -130,18 +130,21 @@ module.exports = class CrazyConfig
             let keys = ["id", "layer_id", "is_bound", "bound_id", "is_relative_bound_direction", "abandon1", "pos_x", "pos_y",
                         "start_frame", "stop_frame", "emmite_pos_x", "emmite_pos_y", "emmite_radius", "emmite_offset_angle",
                         "unkown_emmite_angle_pos", "bullet_count", "interval", "bullet_offset_angle", "unkown_bullet_offset_angle",
-                        "range", "speed", "speed_direction", "unknow_speed_direction_pos", "speed_acc", "speed_acc_direction", "unknow_speed_acc_pos",
-                        "bullet_life", "bullet_type", "bullet_scale_x", "bullet_scale_y", "bullet_R", "bullet_G", "bullet_B", "bullet_aplha",
-                        "bullet_rotate_angle", "unknow_rotate_angle_pos", "bullet_face_speed_angle", "bullet_speed", "bullet_speed_direction",
-                        "unknow_bullet_speed_direction_pos", "bullet_speed_acc", "bullet_speed_acc_direction", "unknow_bullet_speed_acc_direction_pos",
+                        "range", "speed", "speed_angle", "unknow_speed_angle_pos", "speed_acc", "speed_acc_angle", "unknow_speed_acc_pos",
+                        "bullet_life", "bullet_type", "bullet_scale_x", "bullet_scale_y", "bullet_R", "bullet_G", "bullet_B", "bullet_alpha",
+                        "bullet_rotate_angle", "unknow_rotate_angle_pos", "bullet_face_speed_angle", "bullet_speed", "bullet_speed_angle",
+                        "unknow_bullet_speed_angle_pos", "bullet_speed_acc", "bullet_speed_acc_angle", "unknow_bullet_speed_acc_angle_pos",
                         "speed_scale_x", "speed_scale_y", "atomization_effect", "erase_effect", "highlight_blend_effect", "drag_effect",
-                        "erase_when_out", "invincible", "emmiter_events", "bullet_events", "emmite_pos_x_random", "emmite_pos_y_random",
-                        "emmite_radius_random", "emmite_offset_angle_random", "bullet_count_random", "interval_random", "emitter_angle_random", "emitter_range_random", "speed_random",
-                        "speed_direction_random", "speed_acc_random", "speed_acc_direction_random", "relative_direction_random", "bullet_speed_random",
-                        "bullet_speed_direction_random", "bullet_speed_acc_random", "bullet_speed_acc_direction_random", "mask_effect",
+                        "erase_when_out", "invincible", "emmiter_events", "bullet_events", "emmite_pos_x_rand", "emmite_pos_y_rand",
+                        "emmite_radius_rand", "emmite_offset_angle_rand", "bullet_count_rand", "interval_rand", "emitter_angle_rand", "emitter_range_rand", "speed_rand",
+                        "speed_angle_rand", "speed_acc_rand", "speed_acc_angle_rand", "relative_direction_rand", "bullet_speed_rand",
+                        "bullet_speed_angle_rand", "bullet_speed_acc_rand", "bullet_speed_acc_angle_rand", "mask_effect",
                         "inverse_force_effect", "force_field_effect", "is_deep_bound"]
 
             this.fill_items(bullet_emitter, keys, items)
+
+            //位置信息
+
 
             //读入事件进行处理
             if(bullet_emitter.emmiter_events)
@@ -276,8 +279,9 @@ module.exports = class CrazyConfig
         if(bigger_cond_strs.length > 1)
         {
             return {
-                vars:bigger_cond_strs,
+                condition_name:bigger_cond_strs[0],
                 op:">",
+                condition_val:bigger_cond_strs[1]
             }
         }
 
@@ -285,8 +289,9 @@ module.exports = class CrazyConfig
         if(less_cond_strs.length > 1)
         {
             return {
-                vars:less_cond_strs,
+                condition_name:less_cond_strs[0],
                 op:"<",
+                condition_val:less_cond_strs[1]
             }
         }
 
@@ -294,8 +299,9 @@ module.exports = class CrazyConfig
         if(equal_cond_strs.length > 1)
         {
             return {
-                vars:equal_cond_strs,
+                condition_name:equal_cond_strs[0],
                 op:"=",
+                condition_val:equal_cond_strs[1]
             }
         }
     }
@@ -307,8 +313,9 @@ module.exports = class CrazyConfig
         if(change_to_strs.length > 1)
         {
             return {
-                vars:change_to_strs,
+                effect_name:change_to_strs[0],
                 op:"变化到",
+                target_val:Number(change_to_strs[1])
             }
         }
 
@@ -316,8 +323,9 @@ module.exports = class CrazyConfig
         if(add_strs.length > 1)
         {
             return {
-                vars:add_strs,
+                effect_name:change_to_strs[0],
                 op:"增加",
+                target_val:Number(change_to_strs[1])
             }
         }
 
@@ -325,9 +333,14 @@ module.exports = class CrazyConfig
         if(dec_strs.length > 1)
         {
             return {
-                vars:dec_strs,
+                effect_name:change_to_strs[0],
                 op:"减少",
+                target_val:Number(change_to_strs[1])
             }
+        }
+
+        return {
+            effect_name: change_to_strs[0],
         }
     }
 
