@@ -5,11 +5,6 @@ const CrazyEffectBase = require("./CrazyEffectBase")
 
 module.exports = class CrazyEffectLife extends CrazyEffectBase
 {
-    constructor(group, conf)
-    {
-        super(group, conf)
-    }
-
     static get_name()
     {
         return "子弹速度方向"
@@ -26,7 +21,7 @@ module.exports = class CrazyEffectLife extends CrazyEffectBase
     do_effect()
     {
         let val = this.get_cur_val()
-        val = val * (180 / Math.PI)
+        val *= (180 / Math.PI)
 
         this.obj.speed.setAngle(val)
     }

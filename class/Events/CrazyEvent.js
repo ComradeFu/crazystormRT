@@ -28,7 +28,7 @@ module.exports = class CrazyStorm
 
     load_conditions(conf)
     {
-        for(let one of conf)
+        for (let one of conf)
         {
             let cls = Conditions[one.condition_name]
             let cond = new cls(this.group, one)
@@ -40,9 +40,9 @@ module.exports = class CrazyStorm
     //检查
     check()
     {
-        for(let one of this.conds)
+        for (let one of this.conds)
         {
-            if(!one.check())
+            if (!one.check())
                 return false
         }
 
@@ -52,21 +52,21 @@ module.exports = class CrazyStorm
     //关心的事件来了
     trigger()
     {
-        if(this.cur_trigger_times >= this.trigger_times)
+        if (this.cur_trigger_times >= this.trigger_times)
             return
 
-        if(this.check())
-            return 
-        
+        if (this.check())
+            return
+
         //开始触发
-        trigger_effects()
+        this.trigger_effects()
 
         this.cur_trigger_times++
     }
 
     trigger_effects()
     {
-        for(let one of this.cond.effect)
+        for (let one of this.cond.effect)
         {
             let cls = Effects[one.effect_name]
             let effect = new cls(this.group, one)
@@ -80,10 +80,10 @@ module.exports = class CrazyStorm
     {
         //跳动第一个生效的effect
         let first = this.active_effects[0]
-        if(first)
+        if (first)
         {
             let state = first.tick()
-            if(!state)
+            if (!state)
             {
                 //说明结束，将其删除
                 this.active_effects.splice(0, 1)

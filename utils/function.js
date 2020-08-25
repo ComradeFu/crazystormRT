@@ -1,17 +1,17 @@
-module.exports.safe_call = function(func, ...args)
+module.exports.safe_call = function (func, ...args)
 {
     try
     {
         return func(...args)
     }
-    catch(e)
+    catch (e)
     {
         global.console.error(e)
     }
 }
 
 //左闭右开区间
-module.exports.random = function random(min, max)
+module.exports.random = function (min, max)
 {
     let rand = Math.random()
     let interval = max - min

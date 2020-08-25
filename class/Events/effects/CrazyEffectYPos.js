@@ -5,11 +5,6 @@ const CrazyEffectBase = require("./CrazyEffectBase")
 
 module.exports = class CrazyEffectLife extends CrazyEffectBase
 {
-    constructor(group, conf)
-    {
-        super(group, conf)
-    }
-
     static get_name()
     {
         return "Y坐标"

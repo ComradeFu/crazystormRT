@@ -28,7 +28,7 @@ module.exports = class CrazyEventGroup
         this.interval = conf.interval
         this.interval_increasement = conf.interval_increasement
 
-        for(let one of conf.events)
+        for (let one of conf.events)
         {
             let event = new CrazyEvent(this, one)
             this.events.push(event)
@@ -38,17 +38,18 @@ module.exports = class CrazyEventGroup
     listen(event_name, call_back)
     {
         let listeners = this.event_listeners[event_name]
-        if(!listeners)
+        if (!listeners)
             listeners = this.event_listeners[event_name] = []
-        
+
         let listener = {
             call_back
         }
         listeners.push(listener)
 
-        return function()
+        let that = this
+        return function ()
         {
-            this.unlisten(event_name, listener)
+            that.unlisten(event_name, listener)
         }
     }
 
@@ -56,13 +57,13 @@ module.exports = class CrazyEventGroup
     unlisten(event_name, listener)
     {
         let listeners = this.event_listeners[event_name]
-        if(!listeners)
+        if (!listeners)
             return
 
-        for(let index = 0; index < listeners.length; index ++)
+        for (let index = 0; index < listeners.length; index++)
         {
             let event_listener = listeners[index]
-            if(event_listener === listener)
+            if (event_listener === listener)
             {
                 listeners.splice(index, 1)
                 return
@@ -73,7 +74,7 @@ module.exports = class CrazyEventGroup
     trigger(event_name, ...args)
     {
         //挨个触发
-        if(this.is_doing_event)
+        if (this.is_doing_event)
             return
 
         this.doing_events.push([event_name, ...args])
@@ -83,11 +84,11 @@ module.exports = class CrazyEventGroup
 
     try_trigger_one()
     {
-        if(this.is_doing_event)
+        if (this.is_doing_event)
             return
 
         let first = this.doing_events.splice(0, 1)[0]
-        if(first)
+        if (first)
             return
 
         this.is_doing_event = true
@@ -95,7 +96,7 @@ module.exports = class CrazyEventGroup
         let event_name = first.splice(0, 1)
         let listeners = this.event_listeners[event_name] || []
         //遍历进行触发
-        for(let listener of listeners)
+        for (let listener of listeners)
         {
             safe_call(listener.trigger.bind(listener), ...first)
         }
@@ -109,10 +110,10 @@ module.exports = class CrazyEventGroup
     {
         this.tick_events()
     }
-    
+
     tick_events()
     {
-        for(let event of this.events)
+        for (let event of this.events)
         {
             safe_call(event.tick.bind(event))
         }

@@ -19,7 +19,7 @@ module.exports = class CrazyCenter extends CrazyObject
     load_layers(config)
     {
         let conf_layers = config.layers
-        for(let id in conf_layers)
+        for (let id in conf_layers)
         {
             let conf_layer = conf_layers[id]
             let layer = new CrazyLayer(this.rt, conf_layer)

@@ -2,9 +2,10 @@ require("./utils")
 
 const CrazyStormRT = require("./class/CrazyStormRT")
 const CrazyBulletView = require("./class/CrazyBulletView")
+const CrazyBulletViewPlane = require("./class/CrazyBulletViewPlane")
 
-export default CrazyStormRT
 module.exports = {
     CrazyStormRT,
     CrazyBulletView,
+    CrazyBulletViewPlane
 }

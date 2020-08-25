@@ -10,7 +10,7 @@ module.exports = class CrazyConfig
 
         //中心点信息
         this.center = {
-            layers : {}
+            layers: {}
         }
 
         //总帧数
@@ -27,7 +27,7 @@ module.exports = class CrazyConfig
 
         this.load_desc(lines)
 
-        while(lines.length > 0)
+        while (lines.length > 0)
         {
             let line = lines.splice(0, 1)[0]
             let pair = line.split(":")
@@ -35,7 +35,7 @@ module.exports = class CrazyConfig
             let key = pair[0]
             let val = pair[1]
 
-            switch(key)
+            switch (key)
             {
                 case "Center":
                     this.load_center(lines, val)
@@ -57,7 +57,7 @@ module.exports = class CrazyConfig
                     this.load_layers(lines, 4, val)
                     break;
                 default:
-                    console.error(`无法识别的配置:${key}`)
+                    global.console.error(`无法识别的配置:${key}`)
                     break;
             }
         }
@@ -95,7 +95,7 @@ module.exports = class CrazyConfig
         let layer = {}
         let items = line.split(",")
 
-        if(items[0] == "empty")
+        if (items[0] == "empty")
             return
 
         layer.name = items[0]
@@ -109,8 +109,11 @@ module.exports = class CrazyConfig
 
         this.load_layer_bullet_emitter(layer, lines)
         // this.load_layer_laser_emitter(layer, lines)
+
         // this.load_layer_mask(layer, lines)
+
         // this.load_layer_rebound_borad(layer, lines)
+
         // this.load_layer_force_field(layer, lines)
 
         this.center.layers[id] = layer
@@ -121,36 +124,36 @@ module.exports = class CrazyConfig
     {
         let bullet_emitters = layer.bullet_emitters = {}
         let bullet_emitter_count = layer.bullet_emitter_count
-        for(let i = 0; i < bullet_emitter_count; i++)
+        for (let i = 0; i < bullet_emitter_count; i++)
         {
             let line = lines.splice(0, 1)[0]
             let items = line.split(",")
 
             let bullet_emitter = {}
             let keys = ["id", "layer_id", "is_bound", "bound_id", "is_relative_bound_direction", "abandon1", "pos_x", "pos_y",
-                        "start_frame", "stop_frame", "emmite_pos_x", "emmite_pos_y", "emmite_radius", "emmite_offset_angle",
-                        "unkown_emmite_angle_pos", "bullet_count", "interval", "bullet_offset_angle", "unkown_bullet_offset_angle",
-                        "range", "speed", "speed_angle", "unknow_speed_angle_pos", "speed_acc", "speed_acc_angle", "unknow_speed_acc_pos",
-                        "bullet_life", "bullet_type", "bullet_scale_x", "bullet_scale_y", "bullet_R", "bullet_G", "bullet_B", "bullet_alpha",
-                        "bullet_rotate_angle", "unknow_rotate_angle_pos", "bullet_face_speed_angle", "bullet_speed", "bullet_speed_angle",
-                        "unknow_bullet_speed_angle_pos", "bullet_speed_acc", "bullet_speed_acc_angle", "unknow_bullet_speed_acc_angle_pos",
-                        "speed_scale_x", "speed_scale_y", "atomization_effect", "erase_effect", "highlight_blend_effect", "drag_effect",
-                        "erase_when_out", "invincible", "emmiter_events", "bullet_events", "emmite_pos_x_rand", "emmite_pos_y_rand",
-                        "emmite_radius_rand", "emmite_offset_angle_rand", "bullet_count_rand", "interval_rand", "emitter_angle_rand", "emitter_range_rand", "speed_rand",
-                        "speed_angle_rand", "speed_acc_rand", "speed_acc_angle_rand", "relative_direction_rand", "bullet_speed_rand",
-                        "bullet_speed_angle_rand", "bullet_speed_acc_rand", "bullet_speed_acc_angle_rand", "mask_effect",
-                        "inverse_force_effect", "force_field_effect", "is_deep_bound"]
+                "start_frame", "stop_frame", "emmite_pos_x", "emmite_pos_y", "emmite_radius", "emmite_offset_angle",
+                "unkown_emmite_angle_pos", "bullet_count", "interval", "bullet_offset_angle", "unkown_bullet_offset_angle",
+                "range", "speed", "speed_angle", "unknow_speed_angle_pos", "speed_acc", "speed_acc_angle", "unknow_speed_acc_pos",
+                "bullet_life", "bullet_type", "bullet_scale_x", "bullet_scale_y", "bullet_R", "bullet_G", "bullet_B", "bullet_alpha",
+                "bullet_rotate_angle", "unknow_rotate_angle_pos", "bullet_face_speed_angle", "bullet_speed", "bullet_speed_angle",
+                "unknow_bullet_speed_angle_pos", "bullet_speed_acc", "bullet_speed_acc_angle", "unknow_bullet_speed_acc_angle_pos",
+                "speed_scale_x", "speed_scale_y", "atomization_effect", "erase_effect", "highlight_blend_effect", "drag_effect",
+                "erase_when_out", "invincible", "emmiter_events", "bullet_events", "emmite_pos_x_rand", "emmite_pos_y_rand",
+                "emmite_radius_rand", "emmite_offset_angle_rand", "bullet_count_rand", "interval_rand", "emitter_angle_rand", "emitter_range_rand", "speed_rand",
+                "speed_angle_rand", "speed_acc_rand", "speed_acc_angle_rand", "relative_direction_rand", "bullet_speed_rand",
+                "bullet_speed_angle_rand", "bullet_speed_acc_rand", "bullet_speed_acc_angle_rand", "mask_effect",
+                "inverse_force_effect", "force_field_effect", "is_deep_bound"]
 
             this.fill_items(bullet_emitter, keys, items)
 
             //位置信息
-
+            bullet_emitter.pos = [bullet_emitter.pos_x, bullet_emitter.pos_y]
 
             //读入事件进行处理
-            if(bullet_emitter.emmiter_events)
+            if (bullet_emitter.emmiter_events)
                 bullet_emitter.emmiter_events = this.transfer_event_groups_from_config(bullet_emitter.emmiter_events)
-            
-            if(bullet_emitter.bullet_events)
+
+            if (bullet_emitter.bullet_events)
                 bullet_emitter.bullet_events = this.transfer_event_groups_from_config(bullet_emitter.bullet_events)
 
             bullet_emitters[bullet_emitter.id] = bullet_emitter
@@ -167,7 +170,7 @@ module.exports = class CrazyConfig
 
         let event_groups = []
 
-        for(let event_group_string of event_group_strings)
+        for (let event_group_string of event_group_strings)
         {
             let event_group = {}
             let items = event_group_string.split("|")
@@ -179,11 +182,11 @@ module.exports = class CrazyConfig
             let event_strings = events_string.split(";")
             let events = []
             //小事件
-            for(let event_string of event_strings)
+            for (let event_string of event_strings)
             {
                 let event = this.transfer_event_from_config(event_string)
                 events.push(event)
-            }   
+            }
 
             event_group.events = events
 
@@ -204,7 +207,7 @@ module.exports = class CrazyConfig
         let conds = this.analyse_cond_formula(cond_str)
         let vars = conds.vars
         let new_vars = []
-        for(let one of vars)
+        for (let one of vars)
         {
             let cond = this.anylyse_equalation_formula(one)
             new_vars.push(cond)
@@ -216,23 +219,23 @@ module.exports = class CrazyConfig
         let items = effect_str.split("，")
         effect_str = items[0]
         let effect = this.anylyse_effect_formula(effect_str)
-        
+
         let effect_change = items[1]
-        
+
         let effect_frame = items[2]
 
         let trans_frame = 0 //变化frame
-        let patt = /([0-9]*).*/
+        let patt = /([0-9]*).*/u
         let trans_frame_ret = effect_frame.match(patt)
-        if(trans_frame_ret)
+        if (trans_frame_ret)
         {
             trans_frame = Number(trans_frame_ret[1])
         }
 
         let trigger_times = 0 //触发次数，如果 0 则是无限
-        patt = /.*\((.*)\)/
+        patt = /.*\((.*)\)/u
         let trigger_times_ret = effect_frame.match(patt)
-        if(trigger_times_ret)
+        if (trigger_times_ret)
         {
             trigger_times = Number(trigger_times_ret[1])
         }
@@ -250,25 +253,25 @@ module.exports = class CrazyConfig
     analyse_cond_formula(str)
     {
         let or_cond_strs = str.split("或")
-        if(or_cond_strs.length > 1)
+        if (or_cond_strs.length > 1)
         {
             return {
-                vars:or_cond_strs,
-                op:"或",
+                vars: or_cond_strs,
+                op: "或",
             }
         }
 
         let and_cond_strs = str.split("且")
-        if(and_cond_strs.length > 1)
+        if (and_cond_strs.length > 1)
         {
             return {
-                vars:and_cond_strs,
-                op:"且",
+                vars: and_cond_strs,
+                op: "且",
             }
         }
 
         return {
-            vars:[str]
+            vars: [str]
         }
     }
 
@@ -276,32 +279,32 @@ module.exports = class CrazyConfig
     anylyse_equalation_formula(str)
     {
         let bigger_cond_strs = str.split(">")
-        if(bigger_cond_strs.length > 1)
+        if (bigger_cond_strs.length > 1)
         {
             return {
-                condition_name:bigger_cond_strs[0],
-                op:">",
-                condition_val:bigger_cond_strs[1]
+                condition_name: bigger_cond_strs[0],
+                op: ">",
+                condition_val: bigger_cond_strs[1]
             }
         }
 
         let less_cond_strs = str.split("<")
-        if(less_cond_strs.length > 1)
+        if (less_cond_strs.length > 1)
         {
             return {
-                condition_name:less_cond_strs[0],
-                op:"<",
-                condition_val:less_cond_strs[1]
+                condition_name: less_cond_strs[0],
+                op: "<",
+                condition_val: less_cond_strs[1]
             }
         }
 
         let equal_cond_strs = str.split("=")
-        if(equal_cond_strs.length > 1)
+        if (equal_cond_strs.length > 1)
         {
             return {
-                condition_name:equal_cond_strs[0],
-                op:"=",
-                condition_val:equal_cond_strs[1]
+                condition_name: equal_cond_strs[0],
+                op: "=",
+                condition_val: equal_cond_strs[1]
             }
         }
     }
@@ -310,32 +313,32 @@ module.exports = class CrazyConfig
     anylyse_effect_formula(str)
     {
         let change_to_strs = str.split("变化到")
-        if(change_to_strs.length > 1)
+        if (change_to_strs.length > 1)
         {
             return {
-                effect_name:change_to_strs[0],
-                op:"变化到",
-                target_val:Number(change_to_strs[1])
+                effect_name: change_to_strs[0],
+                op: "变化到",
+                target_val: Number(change_to_strs[1])
             }
         }
 
         let add_strs = str.split("增加")
-        if(add_strs.length > 1)
+        if (add_strs.length > 1)
         {
             return {
-                effect_name:change_to_strs[0],
-                op:"增加",
-                target_val:Number(change_to_strs[1])
+                effect_name: change_to_strs[0],
+                op: "增加",
+                target_val: Number(change_to_strs[1])
             }
         }
 
         let dec_strs = str.split("减少")
-        if(dec_strs.length > 1)
+        if (dec_strs.length > 1)
         {
             return {
-                effect_name:change_to_strs[0],
-                op:"减少",
-                target_val:Number(change_to_strs[1])
+                effect_name: change_to_strs[0],
+                op: "减少",
+                target_val: Number(change_to_strs[1])
             }
         }
 
@@ -347,25 +350,25 @@ module.exports = class CrazyConfig
     //根据顺序来加载对应的元素
     fill_items(obj, keys, items)
     {
-        for(let index = 0; index < items.length; index++)
+        for (let index = 0; index < items.length; index++)
         {
             let key = keys[index]
             let val = items[index]
 
-            if(val === "")
+            if (val === "")
                 continue
 
             //检查一遍是不是 bool
-            if(val == "True" || val == "False")
+            if (val == "True" || val == "False")
                 val = (val == "True")
             //尝试转化数字
-            else if(!isNaN(Number(val)))
+            else if (isNaN(Number(val)) == false)
                 val = Number(val)
             else
             {
                 //尝试转化json
                 let val_obj = this.try_parse_json(val)
-                if(val_obj)
+                if (val_obj)
                     val = val_obj
             }
 
@@ -373,18 +376,25 @@ module.exports = class CrazyConfig
         }
     }
 
-    try_parse_json(str) {
-        if (typeof str == 'string') {
+    try_parse_json(str)
+    {
+        if (typeof str == 'string')
+        {
             try 
             {
-                var obj = JSON.parse(str);
-                if(typeof obj == 'object' && obj ){
+                let obj = JSON.parse(str);
+                if (typeof obj == 'object' && obj)
+                {
                     return obj;
-                }else{
+                }
+                else
+                {
                     return false;
                 }
-    
-            } catch(e) {
+
+            }
+            catch (e)
+            {
                 return false;
             }
         }

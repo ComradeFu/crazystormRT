@@ -9,7 +9,7 @@ module.exports = class CrazyLayer extends CrazyObject
     {
         super(rt, config)
         this.name = config.name
-        
+
         this.bullet_emitters = {}
 
         //初始化自己的各种小组件
@@ -20,7 +20,7 @@ module.exports = class CrazyLayer extends CrazyObject
     {
         let bullet_emmiters = config.bullet_emitters
 
-        for(let id in bullet_emmiters)
+        for (let id in bullet_emmiters)
         {
             let bullet_emmiter = bullet_emmiters[id]
 

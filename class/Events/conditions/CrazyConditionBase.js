@@ -35,11 +35,11 @@ module.exports = class CrazyConditionBase
     {
         let that = this
         let event_names = this.get_concert_event_names()
-        for(let event_name of event_names)
+        for (let event_name of event_names)
         {
-            let handler = this.group.listen(event_name, ()=>
+            this.group.listen(event_name, () =>
             {
-                if(that.check_condition())
+                if (that.check_condition())
                 {
                     this.on_check_success()
                 }
@@ -55,7 +55,7 @@ module.exports = class CrazyConditionBase
     check_condition()
     {
         let val = this.get_compare_val()
-        switch(this.op)
+        switch (this.op)
         {
             case ">":
                 return this.val > val

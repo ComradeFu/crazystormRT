@@ -24,6 +24,8 @@ class CrazyStormRT
         this.root = new CrazyObject(this)
         this.center = null
 
+        this.total_frame = 0
+
         //开始初始化
         this.load()
 
@@ -48,27 +50,32 @@ class CrazyStormRT
     {
         //玩家
         this.self_plane = new CrazyObject(this, {
-            pos:[100, 700]
+            pos: [100, 700]
         })
     }
 
     //进行跳动
     update()
     {
-        if(this.frame_count >= this.total_frame)
-            return
-        
-        this.frame_count ++
+        if (this.frame_count >= this.total_frame)
+            return false
+
+        this.frame_count++
 
         this.root.update()
 
-        if(this.frame_count >= this.total_frame)
+        if (this.frame_count >= this.total_frame)
+        {
             this.stop()
+            return false
+        }
+
+        return true
     }
 
     stop()
     {
-        if(this.on_stop)
+        if (this.on_stop)
         {
             this.on_stop()
         }
@@ -78,6 +85,12 @@ class CrazyStormRT
     get_new_id()
     {
         return ++this.id_helper
+    }
+
+    //设置子弹view类
+    set_bullet_view_class(view_class)
+    {
+        this.bullet_view_class = view_class
     }
 }
 

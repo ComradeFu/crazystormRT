@@ -2,11 +2,9 @@
  * 运动的基类
  * 能自我进行跳动运动，并更新位置
  */
-const Vector = require ("../utils/Vector")
-const { safe_call, random } = require ("../utils/function")
-const Define = require("./CrazyDefines")
+const Vector = require("../utils/Vector")
+const { safe_call, random } = require("../utils/function")
 
-const CrazyEventGroup = require("./Events/CrazyEventGroup")
 module.exports = class CrazyObject
 {
     constructor(rt, info)
@@ -25,20 +23,20 @@ module.exports = class CrazyObject
         this.pos = new Vector(0, 0)
 
         //位置（都是世界坐标）
-        if(info.pos)
+        if (info.pos)
             this.set_pos(info.pos)
-        
+
         //角度
         this.angle = info.angle || 0
 
         //速度
         let speed = info.speed || 0
         let speed_rand = info.speed_rand || 0
-        speed = speed + random(0, speed_rand + 1)
+        speed += random(0, speed_rand + 1)
 
         let speed_angle = info.speed_angle || 0
         let speed_angle_rand = info.speed_angle_rand || 0
-        speed_angle = speed_angle + random(0, speed_angle_rand + 1)
+        speed_angle += random(0, speed_angle_rand + 1)
 
         this.speed = new Vector(speed, 0)
         this.speed.setAngle(speed_angle)
@@ -51,11 +49,11 @@ module.exports = class CrazyObject
         //加速度
         let speed_acc = info.speed_acc || 0
         let speed_acc_rand = info.speed_acc_rand || 0
-        speed_acc = speed_acc + random(0, speed_acc_rand + 1)
+        speed_acc += random(0, speed_acc_rand + 1)
 
         let speed_acc_angle = info.speed_acc_angle || 0
         let speed_acc_angle_random = info.speed_acc_angle_random || 0
-        speed_acc_angle = speed_acc_angle + random(0, speed_acc_angle_random + 1)
+        speed_acc_angle += random(0, speed_acc_angle_random + 1)
 
         this.speed_acc = new Vector(speed_acc, 0)
         this.speed_acc.setAngle(speed_acc_angle)
@@ -72,22 +70,22 @@ module.exports = class CrazyObject
         this.father = null
 
         //自身事件
-        this.event_group = new CrazyEventGroup(this)
+        this.event_groups = []
     }
 
     /**
      * 再次注意RT的坐标系不是完整的，坐标都是world pos。
      * 只是在 set_pos 的时候会自动对 children 进行统一的偏移
      * pos = Vector(x, y)
-     * */ 
+     */
     set_pos(pos)
     {
-        if(pos.length == 2)
+        if (pos.length == 2)
         {
             pos = new Vector(pos[0], pos[1])
         }
 
-        if(!(pos instanceof Vector))
+        if (!(pos instanceof Vector))
             throw Error("invalid pos!")
 
         //会连带自己的子节点进行世界坐标变化
@@ -97,7 +95,7 @@ module.exports = class CrazyObject
         safe_call(this.on_set_pos.bind(this), pos)
 
         let offset = pos.subtractNew(old_pos)
-        for(let id in this.children)
+        for (let id in this.children)
         {
             let child = this.children[id]
             let new_pos = child.pos.add(offset)
@@ -132,7 +130,7 @@ module.exports = class CrazyObject
     //删除子节点，简单直接触发遍历删除
     remove_child(child)
     {
-        for(let id of child.children)
+        for (let id of child.children)
         {
             let sub_child = child.children[id]
             child.remove_child(sub_child)
@@ -157,7 +155,7 @@ module.exports = class CrazyObject
 
     add_child(child)
     {
-        if(!child instanceof CrazyObject)
+        if (!(child instanceof CrazyObject))
             throw Error("child must be a CrazyObject.")
 
         child.father = this
@@ -194,10 +192,10 @@ module.exports = class CrazyObject
         this.on_event("tick")
 
         this.update_pos()
-        this.update_speed() 
+        this.update_speed()
 
         //update child
-        for(let id in this.children)
+        for (let id in this.children)
         {
             let child = this.children[id]
             child.update(tick)
@@ -212,7 +210,7 @@ module.exports = class CrazyObject
     {
         //每跳动一帧，就要更新一次位置。这里偷懒直接x、y转化一个 vector 进行运算
         let vector_pos = this.pos.clone()
-        
+
         //速度缩放
         let speed = this.speed.hadamardProductNew(this.speed_scale)
 
@@ -223,7 +221,7 @@ module.exports = class CrazyObject
     update_speed()
     {
         this.update_acc()
-        this.update_forces()  
+        this.update_forces()
     }
 
     update_acc()
@@ -236,7 +234,7 @@ module.exports = class CrazyObject
     {
         //计算好受力
         let total_force = new Vector()
-        for(let source in this.forces)
+        for (let source in this.forces)
         {
             let force = this.forces[source]
             total_force.add(force)
@@ -248,18 +246,18 @@ module.exports = class CrazyObject
 
     update_life()
     {
-        if(this.life == -1)
+        if (this.life == -1)
             return
-        
+
         let frame_count = this.rt.frame_count
-        if(frame_count > (this.life_start + this.life))
+        if (frame_count > (this.life_start + this.life))
         {
             //开始销毁程序
             this.remove_from()
         }
     }
 
-    on_update(tick)
+    on_update()
     {
         //pass
     }
@@ -269,7 +267,7 @@ module.exports = class CrazyObject
     {
         this.on_event(event_name, ...args)
         //遍历子节点进行，所有的事件都是透穿
-        for(let id in this.children)
+        for (let id in this.children)
         {
             let child = this.children[id]
             safe_call(child.trigger_object_event.bind(child), event_name, ...args)
@@ -279,6 +277,7 @@ module.exports = class CrazyObject
     on_event(event_name, ...args)
     {
         //触发自己的group
-        this.event_group.trigger(event_name, ...args)
+        for (let event_group of this.event_groups)
+            event_group.trigger(event_name, ...args)
     }
 }
