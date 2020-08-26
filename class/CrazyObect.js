@@ -3,7 +3,7 @@
  * 能自我进行跳动运动，并更新位置
  */
 const Vector = require("../utils/Vector")
-const { safe_call, random } = require("../utils/function")
+const { safe_call, random, angle2rad, rad2angle } = require("../utils/function")
 
 module.exports = class CrazyObject
 {
@@ -14,8 +14,9 @@ module.exports = class CrazyObject
         this.rt = rt
 
         //life（截止帧） -1 永久
-        this.life_start = rt.frame_count
         this.life = info.life || -1
+
+        this.frame_count = 0
 
         //自己的id
         this.id = rt.get_new_id()
@@ -39,7 +40,7 @@ module.exports = class CrazyObject
         speed_angle += random(0, speed_angle_rand + 1)
 
         this.speed = new Vector(speed, 0)
-        this.speed.setAngle(speed_angle)
+        this.speed.setAngle(angle2rad(speed_angle))
 
         //速度缩放
         let speed_scale_x = info.speed_scale_x || 1
@@ -56,7 +57,9 @@ module.exports = class CrazyObject
         speed_acc_angle += random(0, speed_acc_angle_random + 1)
 
         this.speed_acc = new Vector(speed_acc, 0)
-        this.speed_acc.setAngle(speed_acc_angle)
+        this.speed_acc.setAngle(angle2rad(speed_acc_angle))
+
+        this.face_speed_angle = info.face_speed_angle
 
         //多重受力（算是加速度其实）
         this.forces = {
@@ -109,6 +112,19 @@ module.exports = class CrazyObject
         //pass
     }
 
+    //设置角度（不是弧度)
+    set_angle(angle)
+    {
+        this.angle = angle
+
+        this.on_set_angle(angle)
+    }
+
+    on_set_angle()
+    {
+        //pass
+    }
+
     //设置速度 Vector(magnitude, angle)
     set_speed(speed)
     {
@@ -121,6 +137,23 @@ module.exports = class CrazyObject
         this.speed_acc = speed_acc
     }
 
+    //摧毁自己
+    destroy()
+    {
+        this.is_destroyed = true
+
+        let father = this.father
+        if (father)
+            father.remove_child(this)
+
+        this.on_destroy()
+    }
+
+    on_destroy()
+    {
+        //pass
+    }
+
     //从父级删除
     remove_from()
     {
@@ -130,7 +163,7 @@ module.exports = class CrazyObject
     //删除子节点，简单直接触发遍历删除
     remove_child(child)
     {
-        for (let id of child.children)
+        for (let id in child.children)
         {
             let sub_child = child.children[id]
             child.remove_child(sub_child)
@@ -157,6 +190,9 @@ module.exports = class CrazyObject
     {
         if (!(child instanceof CrazyObject))
             throw Error("child must be a CrazyObject.")
+
+        if (child.father)
+            child.father.remove_child(child)
 
         child.father = this
         this.children[child.id] = child
@@ -188,11 +224,18 @@ module.exports = class CrazyObject
     //跳动自身的接口
     update(tick)
     {
+        this.__tick(tick)
+    }
+
+    __tick(tick)
+    {
         //事件
         this.on_event("tick")
 
         this.update_pos()
         this.update_speed()
+
+        this.update_events()
 
         //update child
         for (let id in this.children)
@@ -204,18 +247,29 @@ module.exports = class CrazyObject
         this.update_life()
 
         safe_call(this.on_update.bind(this), tick)
+
+        this.frame_count++
     }
 
     update_pos()
     {
         //每跳动一帧，就要更新一次位置。这里偷懒直接x、y转化一个 vector 进行运算
-        let vector_pos = this.pos.clone()
+        let old_pos = this.pos.clone()
 
         //速度缩放
         let speed = this.speed.hadamardProductNew(this.speed_scale)
 
-        let new_pos_vector = vector_pos.add(speed)
+        let new_pos_vector = this.pos.addNew(speed)
         this.set_pos(new_pos_vector)
+
+        if (this.face_speed_angle)
+        {
+            let distance = new_pos_vector.subtractNew(old_pos)
+            let move_angle = distance.getAngle()
+
+            move_angle = rad2angle(move_angle)
+            this.set_angle(move_angle)
+        }
     }
 
     update_speed()
@@ -249,12 +303,18 @@ module.exports = class CrazyObject
         if (this.life == -1)
             return
 
-        let frame_count = this.rt.frame_count
-        if (frame_count > (this.life_start + this.life))
+        let frame_count = this.frame_count
+        if (frame_count > this.life)
         {
             //开始销毁程序
-            this.remove_from()
+            this.destroy()
         }
+    }
+
+    update_events()
+    {
+        for (let event_group of this.event_groups)
+            event_group.update()
     }
 
     on_update()

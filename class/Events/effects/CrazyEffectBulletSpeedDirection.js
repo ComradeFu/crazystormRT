@@ -15,13 +15,14 @@ module.exports = class CrazyEffectLife extends CrazyEffectBase
     {
         //弧度值
         let rad = this.obj.speed.getAngle()
-        return rad * (Math.PI / 180)
+        return rad / Math.PI * 180
     }
 
     do_effect()
     {
+        //角度
         let val = this.get_cur_val()
-        val *= (180 / Math.PI)
+        val = val / 180 * Math.PI
 
         this.obj.speed.setAngle(val)
     }

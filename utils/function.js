@@ -24,3 +24,13 @@ module.exports.random = function (min, max)
     return rand
 }
 
+//角度转换弧度
+module.exports.angle2rad = function (angle)
+{
+    return (angle / 180) * Math.PI
+}
+
+module.exports.rad2angle = function (rad)
+{
+    return rad / Math.PI * 180
+}

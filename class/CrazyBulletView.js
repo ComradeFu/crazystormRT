@@ -17,4 +17,9 @@ module.exports = class CrazyBulletView
     {
         throw new Error("must override on_set_pos function!")
     }
+
+    on_destroy()
+    {
+        //pass
+    }
 }

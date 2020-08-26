@@ -5,7 +5,7 @@
  * 注意这不是标准的 “事件系统”，而是简化之后的、更简易的体系
  * 
  */
-const safe_call = global.safe_call
+const { safe_call } = require("../../utils/function")
 const CrazyEvent = require("./CrazyEvent")
 module.exports = class CrazyEventGroup
 {
@@ -35,21 +35,25 @@ module.exports = class CrazyEventGroup
         }
     }
 
-    listen(event_name, call_back)
+    listen(event_name, event)
     {
         let listeners = this.event_listeners[event_name]
         if (!listeners)
             listeners = this.event_listeners[event_name] = []
 
-        let listener = {
-            call_back
+        //检查是否已经存在
+        for (let listener of listeners)
+        {
+            if (listener === event)
+                return
         }
-        listeners.push(listener)
+
+        listeners.push(event)
 
         let that = this
         return function ()
         {
-            that.unlisten(event_name, listener)
+            that.unlisten(event_name, event)
         }
     }
 
@@ -74,9 +78,6 @@ module.exports = class CrazyEventGroup
     trigger(event_name, ...args)
     {
         //挨个触发
-        if (this.is_doing_event)
-            return
-
         this.doing_events.push([event_name, ...args])
 
         this.try_trigger_one()
@@ -88,7 +89,7 @@ module.exports = class CrazyEventGroup
             return
 
         let first = this.doing_events.splice(0, 1)[0]
-        if (first)
+        if (!first)
             return
 
         this.is_doing_event = true

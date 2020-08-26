@@ -2,6 +2,7 @@ const modules = {}
 
 let modules_arr = [
     require("./CrazyEffectBulletSpeed"),
+    require("./CrazyEffectBulletSpeedDirection"),
     require("./CrazyEffectLife"),
     require("./CrazyEffectSpeed"),
     require("./CrazyEffectSpeedDirection"),

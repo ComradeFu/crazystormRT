@@ -65,7 +65,6 @@ module.exports = class CrazyEffectBase
 
     tick()
     {
-        this.frame_count++
         try
         {
             this.do_effect()
@@ -75,7 +74,9 @@ module.exports = class CrazyEffectBase
             global.console.error(e)
         }
 
-        if (this.frame_count >= this.trans_frame)
+        this.frame_count++
+
+        if (this.frame_count > this.trans_frame)
             return false
 
         return true

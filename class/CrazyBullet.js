@@ -21,7 +21,7 @@ module.exports = class CrazyBullet extends CrazyObject
         //事件
         this.init_event_group()
 
-        global.console.log(`bullet ${this.id} create !`)
+        // global.console.log(`bullet ${this.id} create !`)
     }
 
     init_event_group()
@@ -57,6 +57,9 @@ module.exports = class CrazyBullet extends CrazyObject
 
     on_remove(...args)
     {
+        let emmiter = this.emmiter
+        delete emmiter.bullets[this.id]
+
         if (!this.view)
             return
 
@@ -65,10 +68,26 @@ module.exports = class CrazyBullet extends CrazyObject
 
     on_set_pos(...args)
     {
-        // global.console.log(`update pos : ${args[0].x}, ${args[0].y}`)
+        // global.console.log(`bullet[${this.id}] update pos : ${args[0].x}, ${args[0].y}`)
         if (!this.view)
             return
 
         this.view.on_set_pos(...args)
+    }
+
+    on_set_angle(...args)
+    {
+        if (!this.view)
+            return
+
+        this.view.on_set_angle(...args)
+    }
+
+    on_destroy()
+    {
+        if (!this.view)
+            return
+
+        this.view.on_destroy()
     }
 }

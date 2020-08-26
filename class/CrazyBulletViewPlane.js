@@ -18,17 +18,34 @@ module.exports = class BulletView extends CrazyBulletView
             pos: [pos.x, pos.y],
             camp: owner.camp,
             owner: owner,
-            ai_type: "c/do_nothing",
+            ai_type: "m/crazystorm_bullet",
+            ai_config: {
+                crazy_bullet: bullet,
+            },
             view_angle: bullet.angle,
         }
         bullet_info.obj_id = 11001; //先固定
         let view = this.fight.generate_bullet(this.battle, owner, bullet_info);
         this.view = view
+
+        view.on_destroy = function ()
+        {
+            if (!bullet.is_destroyed)
+                //同步销毁
+                bullet.destroy()
+        }
     }
 
     on_remove()
     {
+        //同时销毁子弹
 
+        // this.fight.add_to_remove(this.battle, this.view.id);
+    }
+
+    on_destroy()
+    {
+        this.fight.add_to_remove(this.battle, this.view.id);
     }
 
     on_add()
@@ -45,5 +62,10 @@ module.exports = class BulletView extends CrazyBulletView
         let target = this.view
         target.speed[0] += pos_x - target.pos[0];
         target.speed[1] += pos_y - target.pos[1];
+    }
+
+    on_set_angle(angle)
+    {
+        this.view.view_angle = angle
     }
 }

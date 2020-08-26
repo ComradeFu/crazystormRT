@@ -6,7 +6,7 @@ const CrazyObject = require("./CrazyObect")
 const CrazyBullet = require("./CrazyBullet")
 const CrazyEventGroup = require("./Events/CrazyEventGroup")
 
-const { random } = require("../utils/function")
+const { random, angle2rad } = require("../utils/function")
 const Define = require("./CrazyDefines")
 module.exports = class CrazeBulletEmmiter extends CrazyObject
 {
@@ -82,7 +82,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
      */
     emmit_angle(bullet_count, range, bullet_offset_angle, x)
     {
-        return bullet_offset_angle + (x - (bullet_count / 2) * (range / bullet_count))
+        return bullet_offset_angle + (x - (bullet_count - 1) / 2) * (range / bullet_count)
     }
 
     //发动一次子弹
@@ -110,6 +110,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         {
             type: conf.bullet_type,
 
+            life: conf.bullet_life,
             scale_x: conf.bullet_scale_x,
             scale_y: conf.bullet_scale_y,
             R: conf.bullet_R,
@@ -149,7 +150,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
             let radius_angle = this.emmit_angle(bullet_count, range, radius_offset_angle, index)
 
             let shoot_pos_vec = new Vector(radius)
-            shoot_pos_vec.setAngle(radius_angle)
+            shoot_pos_vec.setAngle(angle2rad(radius_angle))
 
             shoot_pos_vec.add(shoot_pos)
 
@@ -169,12 +170,15 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
             if (bullet_view_class)
             {
                 let cls = bullet_view_class[0]
-                let bullet_view = new cls(bullet, bullet_view_class[1])
+                let bullet_view = new cls(bullet, bullet_view_class[1], this)
                 bullet.set_view(bullet_view)
             }
 
             //注意添加的是root节点（一旦发射不受其他影响之故）
-            this.rt.root.add_child(bullet)
+
+            //更新，直接不再受root控制
+
+            // this.rt.root.add_child(bullet)
 
             this.bullets[bullet.id] = bullet
 
@@ -214,7 +218,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
             return
 
         //已经结束
-        if (cur_tick > this.stop_frame)
+        if (cur_tick > this.start_frame + this.stop_frame)
             return
 
         let next_emmit_time = this.next_emmit_time

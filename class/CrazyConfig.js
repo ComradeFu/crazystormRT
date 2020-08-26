@@ -224,28 +224,35 @@ module.exports = class CrazyConfig
 
         let effect_frame = items[2]
 
-        let trans_frame = 0 //变化frame
-        let patt = /([0-9]*).*/u
-        let trans_frame_ret = effect_frame.match(patt)
-        if (trans_frame_ret)
-        {
-            trans_frame = Number(trans_frame_ret[1])
-        }
-
+        let trans_frame = 1 //变化frame
         let trigger_times = 0 //触发次数，如果 0 则是无限
-        patt = /.*\((.*)\)/u
-        let trigger_times_ret = effect_frame.match(patt)
-        if (trigger_times_ret)
+
+        if (effect_frame)
         {
-            trigger_times = Number(trigger_times_ret[1])
+            let patt = /([0-9]*).*/u
+            let trans_frame_ret = effect_frame.match(patt)
+            if (trans_frame_ret)
+            {
+                trans_frame = Number(trans_frame_ret[1])
+            }
+
+            patt = /.*\((.*)\)/u
+            let trigger_times_ret = effect_frame.match(patt)
+            if (trigger_times_ret)
+            {
+                trigger_times = Number(trigger_times_ret[1])
+            }
         }
 
         return {
             conds,
-            effect,
-            effect_change,
-            trans_frame,
-            trigger_times
+            effect:
+            {
+                effect,
+                effect_change,
+                trans_frame,
+                trigger_times
+            }
         }
     }
 
@@ -284,7 +291,7 @@ module.exports = class CrazyConfig
             return {
                 condition_name: bigger_cond_strs[0],
                 op: ">",
-                condition_val: bigger_cond_strs[1]
+                condition_val: this.get_val(bigger_cond_strs[1])
             }
         }
 
@@ -294,7 +301,7 @@ module.exports = class CrazyConfig
             return {
                 condition_name: less_cond_strs[0],
                 op: "<",
-                condition_val: less_cond_strs[1]
+                condition_val: this.get_val(less_cond_strs[1])
             }
         }
 
@@ -304,7 +311,7 @@ module.exports = class CrazyConfig
             return {
                 condition_name: equal_cond_strs[0],
                 op: "=",
-                condition_val: equal_cond_strs[1]
+                condition_val: this.get_val(equal_cond_strs[1])
             }
         }
     }
@@ -326,9 +333,9 @@ module.exports = class CrazyConfig
         if (add_strs.length > 1)
         {
             return {
-                effect_name: change_to_strs[0],
+                effect_name: add_strs[0],
                 op: "增加",
-                target_val: Number(change_to_strs[1])
+                target_val: Number(add_strs[1])
             }
         }
 
@@ -336,14 +343,14 @@ module.exports = class CrazyConfig
         if (dec_strs.length > 1)
         {
             return {
-                effect_name: change_to_strs[0],
+                effect_name: dec_strs[0],
                 op: "减少",
-                target_val: Number(change_to_strs[1])
+                target_val: Number(dec_strs[1])
             }
         }
 
         return {
-            effect_name: change_to_strs[0],
+            effect_name: str
         }
     }
 
@@ -355,25 +362,30 @@ module.exports = class CrazyConfig
             let key = keys[index]
             let val = items[index]
 
-            if (val === "")
-                continue
-
-            //检查一遍是不是 bool
-            if (val == "True" || val == "False")
-                val = (val == "True")
-            //尝试转化数字
-            else if (isNaN(Number(val)) == false)
-                val = Number(val)
-            else
-            {
-                //尝试转化json
-                let val_obj = this.try_parse_json(val)
-                if (val_obj)
-                    val = val_obj
-            }
-
-            obj[key] = val
+            obj[key] = this.get_val(val)
         }
+    }
+
+    get_val(val)
+    {
+        if (val === "")
+            return
+
+        //检查一遍是不是 bool
+        if (val == "True" || val == "False")
+            val = (val == "True")
+        //尝试转化数字
+        else if (isNaN(Number(val)) == false)
+            val = Number(val)
+        else
+        {
+            //尝试转化json
+            let val_obj = this.try_parse_json(val)
+            if (val_obj)
+                val = val_obj
+        }
+
+        return val
     }
 
     try_parse_json(str)

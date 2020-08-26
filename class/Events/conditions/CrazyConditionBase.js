@@ -9,15 +9,10 @@ module.exports = class CrazyConditionBase
         this.obj = group.obj
 
         //判断的值
-        this.val = 0
+        this.val = info.condition_val
 
         //op关键字
         this.op = info.op
-
-        //检查成功之后的回调函数
-        this.on_check_success = undefined
-
-        this.regist_group_event()
     }
 
     static get_name()
@@ -29,22 +24,6 @@ module.exports = class CrazyConditionBase
     get_concert_event_names()
     {
         throw Error("must override get_concert_event_names method.")
-    }
-
-    regist_group_event()
-    {
-        let that = this
-        let event_names = this.get_concert_event_names()
-        for (let event_name of event_names)
-        {
-            this.group.listen(event_name, () =>
-            {
-                if (that.check_condition())
-                {
-                    this.on_check_success()
-                }
-            })
-        }
     }
 
     get_compare_val()

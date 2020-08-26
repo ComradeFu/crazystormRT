@@ -19,7 +19,6 @@ module.exports = class CrazyConditionCurFrame extends CrazyConditionBase
     //获取比较的值
     get_compare_val()
     {
-        let rt = this.obj.rt
-        return rt.frame_cout
+        return this.obj.frame_count
     }
 }
