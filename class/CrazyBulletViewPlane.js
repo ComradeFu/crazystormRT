@@ -28,6 +28,16 @@ module.exports = class BulletView extends CrazyBulletView
         let view = this.fight.generate_bullet(this.battle, owner, bullet_info);
         this.view = view
 
+        //变形
+        let scale_x = bullet.conf.scale_x
+        let scale_y = bullet.conf.scale_y
+
+        view.scale = [scale_x, scale_y]
+        this.fight.push_view(this.battle, "update_scale", view.id);
+
+        //色相跟透明度
+
+
         view.on_destroy = function ()
         {
             if (!bullet.is_destroyed)

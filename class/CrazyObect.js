@@ -142,11 +142,18 @@ module.exports = class CrazyObject
     {
         this.is_destroyed = true
 
+        //摧毁子节点
+        for (let id in this.children)
+        {
+            let child = this.children[id]
+            child.on_destroy()
+        }
+
         let father = this.father
         if (father)
             father.remove_child(this)
 
-        this.on_destroy()
+        safe_call(this.on_destroy.bind(this))
     }
 
     on_destroy()
@@ -229,6 +236,8 @@ module.exports = class CrazyObject
 
     __tick(tick)
     {
+        this.frame_count++
+
         //事件
         this.on_event("tick")
 
@@ -247,8 +256,6 @@ module.exports = class CrazyObject
         this.update_life()
 
         safe_call(this.on_update.bind(this), tick)
-
-        this.frame_count++
     }
 
     update_pos()
@@ -304,7 +311,7 @@ module.exports = class CrazyObject
             return
 
         let frame_count = this.frame_count
-        if (frame_count > this.life)
+        if (frame_count > this.life + 1)
         {
             //开始销毁程序
             this.destroy()

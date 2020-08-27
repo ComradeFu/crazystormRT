@@ -29,5 +29,19 @@ module.exports = class CrazyLayer extends CrazyObject
 
             this.add_child(emmiter)
         }
+
+        //处理绑定关系，绑定的发射器退化成，只提供配置克隆的能力，不具有发射能力
+        for (let bullet_emmiter_id in this.bullet_emitters)
+        {
+            let bullet_emmiter = this.bullet_emitters[bullet_emmiter_id]
+            if (bullet_emmiter.bound_id != -1)
+            {
+                //设定为真
+                bullet_emmiter.set_bound_template()
+
+                let bound_emmiter = this.bullet_emitters[bullet_emmiter.bound_id]
+                bound_emmiter.set_bound_emmiter(bullet_emmiter)
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ module.exports = class CrazyEffectBase
         this.frame_count = 0
 
         this.effect_change = conf.effect_change
-        this.trans_frame = conf.trans_frame
+        this.trans_frame = conf.trans_frame + 1  // + 1是因为，似乎 CrazyStorm 的计算
         this.trigger_times = conf.trigger_times
 
         this.origin_val = this.get_origin_val()

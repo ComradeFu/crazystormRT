@@ -8,6 +8,7 @@ let modules_arr = [
     require("./CrazyEffectSpeedDirection"),
     require("./CrazyEffectXPos"),
     require("./CrazyEffectYPos"),
+    require("./CrazyEffectEmmitAngle"),
 ]
 
 for (let mod of modules_arr)

@@ -38,6 +38,12 @@ module.exports = class CrazyEvent
         for (let one of conf.vars)
         {
             let cls = Conditions[one.condition_name]
+            if (!cls)
+            {
+                global.console.error(`找不到事件条件：`, one.condition_name)
+                continue
+            }
+
             let cond = new cls(this.group, one)
 
             let event_names = cond.get_concert_event_names()
@@ -94,7 +100,7 @@ module.exports = class CrazyEvent
         let cls = Effects[conf_effect.effect.effect_name]
         if (!cls)
         {
-            global.console.error(`找不到事件: ${conf_effect.effect.effect_name}`)
+            global.console.error(`找不到事件效果: ${conf_effect.effect.effect_name}`)
             return
         }
 

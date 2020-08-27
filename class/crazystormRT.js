@@ -75,6 +75,9 @@ class CrazyStormRT
 
     stop()
     {
+        //重置 framecout
+        this.frame_count = 0
+
         if (this.on_stop)
         {
             this.on_stop()
