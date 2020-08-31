@@ -2,11 +2,12 @@
  * crazy storm 引擎对应的 子弹发射 类
  */
 const Vector = require("../utils/Vector")
+const CrazyNumber = require("./CrazyNumber")
 const CrazyObject = require("./CrazyObect")
 const CrazyBullet = require("./CrazyBullet")
 const CrazyEventGroup = require("./Events/CrazyEventGroup")
 
-const { random, angle2rad, rad2angle } = require("../utils/function")
+const { lerp, angle2rad, rad2angle } = require("../utils/function")
 const Define = require("./CrazyDefines")
 module.exports = class CrazeBulletEmmiter extends CrazyObject
 {
@@ -15,6 +16,9 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         super(rt, conf)
 
         this.layer_id = conf.layer_id
+
+        //目前是给事件系统所使用
+        this.tp = "emmiter"
 
         //持续
         this.start_frame = conf.start_frame
@@ -27,23 +31,17 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         this.shoot_pos_rand = new Vector(conf.emmite_pos_x_rand, conf.emmite_pos_y_rand)
 
         //发射的半径信息
-        this.radius = conf.emmite_radius
-        this.radius_rand = conf.emmite_radius_rand
-        this.radius_offset_angle = conf.emmite_offset_angle
-        this.radius_offset_angle_rand = conf.emmite_offset_angle_rand
+        this.radius = new CrazyNumber(conf.emmite_radius, conf.emmite_radius_rand)
+        this.radius_offset_angle = new CrazyNumber(conf.emmite_offset_angle, conf.emmite_offset_angle_rand)
 
-        this.bullet_count = conf.bullet_count
-        this.bullet_count_rand = conf.bullet_count_rand
+        this.bullet_count = new CrazyNumber(conf.bullet_count, conf.bullet_count_rand)
 
         //周期
-        this.interval = conf.interval
-        this.interval_rand = conf.interval_rand
+        this.interval = new CrazyNumber(conf.interval, conf.interval_rand)
 
         //发射范围信息
-        this.range = conf.range
-        this.range_rand = conf.emitter_range_rand
-        this.bullet_offset_angle = conf.bullet_offset_angle
-        this.bullet_offset_angle_rand = conf.emitter_angle_rand
+        this.range = new CrazyNumber(conf.range, conf.range_rand)
+        this.bullet_offset_angle = new CrazyNumber(conf.bullet_offset_angle, conf.emitter_angle_rand)
 
         //绑定信息
         this.is_bound = conf.is_bound
@@ -51,13 +49,8 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         this.is_deep_bound = conf.is_deep_bound
         this.is_relative_bound_direction = conf.is_relative_bound_direction
 
-        //自身是否为绑定template的状态
-        this.is_bound_template = false
-
-        //绑定子弹发射的 emmiter 们
-        this.bound_emmiters = {}
-
         this.conf = conf
+        this.active_conf = Object.assign({}, conf)
 
         //bullets
         this.bullets = {}
@@ -81,23 +74,6 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         }
     }
 
-    //成为模板之后，不会进行自身的发射、跳动
-    set_bound_template()
-    {
-        this.is_bound_template = true
-    }
-
-    //设定绑定的emmiter之后，会随着子弹发射而发射
-    set_bound_emmiter(bound_emmiter)
-    {
-        this.bound_emmiters[bound_emmiter.id] = bound_emmiter
-    }
-
-    get_emmite_interval()
-    {
-        return this.interval + random(0, this.interval_rand + 1)
-    }
-
     /**
      * 动态计算以及子弹应该有的角度（因为可能修改）发射点的 pos
      * 第 x 个，0 <= x < this.bullet_count
@@ -111,11 +87,11 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
     emmit_bullets()
     {
         //发射角度
-        let bullet_count = this.bullet_count + random(0, this.bullet_count_rand + 1)
-        let range = this.range + random(0, this.range_rand + 1)
+        let bullet_count = this.bullet_count.val
+        let range = this.range.val
 
-        let radius_offset_angle = this.radius_offset_angle + random(0, this.radius_offset_angle_rand + 1)
-        let bullet_offset_angle = this.bullet_offset_angle + random(0, this.bullet_offset_angle_rand + 1)
+        let radius_offset_angle = this.radius_offset_angle.val
+        let bullet_offset_angle = this.bullet_offset_angle.val
 
         //如果绑定了，而且方向跟父节点有关系，还要加上父节点的速度方向
         if (this.bound_id != -1 && this.is_relative_bound_direction)
@@ -125,16 +101,16 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         }
 
         //发射点位置
-        let radius = this.radius + random(0, this.radius_rand + 1)
+        let radius = this.radius.val
 
         //发射位置
         let shoot_pos = this.shoot_pos.clone()
         this.trans_pos(shoot_pos) //转换一次自身跟自机
-        shoot_pos.x += random(0, this.shoot_pos_rand.x + 1)
-        shoot_pos.y += random(0, this.shoot_pos_rand.y + 1)
+        shoot_pos.x += lerp(-this.shoot_pos_rand.x, this.shoot_pos_rand.x, Math.random())
+        shoot_pos.y += lerp(-this.shoot_pos_rand.y, this.shoot_pos_rand.y, Math.random())
 
         //组合好子弹obj
-        let conf = this.conf
+        let conf = this.active_conf
         let bullet_conf =
         {
             type: conf.bullet_type,
@@ -171,6 +147,9 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
             mask_effect: conf.mask_effect,
             inverse_force_effect: conf.inverse_force_effect,
             force_field_effect: conf.force_field_effect,
+
+            //绑定的发射器
+            bounds: conf.bounds,
         }
 
         for (let index = 0; index < bullet_count; index++)
@@ -185,7 +164,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
 
             //发射的angle
             let emmit_angle = this.emmit_angle(bullet_count, range, bullet_offset_angle, index)
-            emmit_angle += random(0, this.conf.speed_angle_rand + 1)
+            emmit_angle += lerp(-this.conf.speed_angle_rand, this.conf.speed_angle_rand, Math.random())
 
             let bullet_info = {
                 pos: shoot_pos_vec,
@@ -218,18 +197,6 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         // this.rt.root.add_child(bullet)
 
         this.bullets[bullet.id] = bullet
-
-        //同时，将绑定的子弹发射器，给绑到子弹
-        for (let id in this.bound_emmiters)
-        {
-            let bound_emmiter = this.bound_emmiters[id]
-            let new_bound_emmiter = new this.constructor(this.rt, bound_emmiter.conf)
-
-            //设置为当前的位置
-            new_bound_emmiter.set_pos(bullet.pos.clone())
-
-            bullet.add_child(new_bound_emmiter)
-        }
     }
 
     //转换坐标
@@ -255,24 +222,34 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         }
     }
 
+    //设置半径
+    set_radius(radius)
+    {
+        this.radius = radius
+
+        //触发事件
+        this.on_event("radius_change")
+    }
+
+    //设置发射条数
+    set_bullet_count(count)
+    {
+        this.bullet_count = count
+
+        //触发事件
+        this.on_event("bullet_count_change")
+    }
+
     //跳动
     on_update()
     {
-        //模板状态下不发射
-        if (this.is_bound_template)
-            return
-
-        let cur_tick = this.rt.frame_count
-        //还没有开始
-        if (cur_tick < this.start_frame)
-            return
-
+        let cur_tick = this.frame_count
         //已经结束
-        if (cur_tick > this.start_frame + this.stop_frame)
+        if (cur_tick > this.stop_frame)
             return
 
-        let interval = this.get_emmite_interval()
-        if ((cur_tick % interval) == 0)
+        let interval = this.interval.val
+        if (cur_tick != 0 && (cur_tick % interval) == 0)
         {
             if (this.total_bullets != -1 && this.emmited_bullets >= this.total_bullets)
                 return

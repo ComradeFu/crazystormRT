@@ -1,4 +1,5 @@
 const CrazyBulletView = require("./CrazyBulletView")
+const Vector = require("./../utils/Vector")
 //子弹的view类
 module.exports = class BulletView extends CrazyBulletView
 {
@@ -8,14 +9,17 @@ module.exports = class BulletView extends CrazyBulletView
 
         this.bullet = bullet
 
-        this.fight = info.fight
-        this.battle = info.battle
+        let fight = this.fight = info.fight
+        let battle = this.battle = info.battle
         let owner = this.owner = info.owner
+
+        this.pos_scale = new Vector(info.pos_scale_x, info.pos_scale_y)
+
         let pos = bullet.pos
 
         //新建一个子弹出来
         let bullet_info = {
-            pos: [pos.x, pos.y],
+            pos: [pos.x * info.pos_scale_x, pos.y * info.pos_scale_y],
             camp: owner.camp,
             owner: owner,
             ai_type: "m/crazystorm_bullet",
@@ -24,19 +28,28 @@ module.exports = class BulletView extends CrazyBulletView
             },
             view_angle: bullet.angle,
         }
-        bullet_info.obj_id = 11001; //先固定
-        let view = this.fight.generate_bullet(this.battle, owner, bullet_info);
+        bullet_info.obj_id = 17700 + bullet.conf.type
+        let view = fight.generate_bullet(this.battle, owner, bullet_info);
         this.view = view
 
         //变形
-        let scale_x = bullet.conf.scale_x
-        let scale_y = bullet.conf.scale_y
+        this.on_set_scale(bullet.scale)
 
-        view.scale = [scale_x, scale_y]
-        this.fight.push_view(this.battle, "update_scale", view.id);
+        //透明度
+        let alpha = bullet.conf.alpha
+        view.alpha = alpha;
+        fight.push_view(battle, "change_alpha", view.id, alpha);
 
-        //色相跟透明度
-
+        //色相
+        if (global.enable_rgb)
+        {
+            let o = {};
+            o.r = bullet.conf.R / 255;
+            o.g = bullet.conf.G / 255;
+            o.b = bullet.conf.B / 255;
+            // o.clear = false;
+            fight.push_view(battle, "colorfilter", view.id, o);
+        }
 
         view.on_destroy = function ()
         {
@@ -63,13 +76,17 @@ module.exports = class BulletView extends CrazyBulletView
 
     }
 
-    on_set_pos(pos)
+    on_set_pos(old_pos, new_pos)
     {
+        let new_pos_clone = new_pos.clone()
+        new_pos_clone.hadamardProduct(this.pos_scale)
+
         //设置子弹的位置
-        let pos_x = pos.x
-        let pos_y = pos.y
+        let pos_x = new_pos_clone.x
+        let pos_y = new_pos_clone.y
 
         let target = this.view
+
         target.speed[0] += pos_x - target.pos[0];
         target.speed[1] += pos_y - target.pos[1];
     }
@@ -77,5 +94,19 @@ module.exports = class BulletView extends CrazyBulletView
     on_set_angle(angle)
     {
         this.view.view_angle = angle
+    }
+
+    on_set_scale(scale)
+    {
+        let fight = this.fight
+        let battle = this.battle
+
+        let scale_x = scale.x
+        let scale_y = scale.y
+        let view = this.view
+
+        // view.scale = [scale_x, scale_y]
+        view.scale = [scale_y, scale_x]
+        fight.push_view(battle, "update_scale", view.id);
     }
 }

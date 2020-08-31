@@ -13,6 +13,8 @@ module.exports = class CrazyEventGroup
     {
         this.obj = obj
 
+        this.event_id_helper = 0
+
         this.events = []
 
         //正在触发中的事件列表
@@ -31,6 +33,8 @@ module.exports = class CrazyEventGroup
         for (let one of conf.events)
         {
             let event = new CrazyEvent(this, one)
+            event.event_id = ++this.event_id_helper
+
             this.events.push(event)
         }
     }

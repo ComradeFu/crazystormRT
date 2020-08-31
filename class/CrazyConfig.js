@@ -325,7 +325,7 @@ module.exports = class CrazyConfig
             return {
                 effect_name: change_to_strs[0],
                 op: "变化到",
-                target_val: Number(change_to_strs[1])
+                target_val: this.try_parse_random_number(change_to_strs[1])
             }
         }
 
@@ -335,7 +335,7 @@ module.exports = class CrazyConfig
             return {
                 effect_name: add_strs[0],
                 op: "增加",
-                target_val: Number(add_strs[1])
+                target_val: this.try_parse_random_number(add_strs[1])
             }
         }
 
@@ -345,7 +345,7 @@ module.exports = class CrazyConfig
             return {
                 effect_name: dec_strs[0],
                 op: "减少",
-                target_val: Number(dec_strs[1])
+                target_val: this.try_parse_random_number(dec_strs[1])
             }
         }
 
@@ -412,5 +412,18 @@ module.exports = class CrazyConfig
         }
 
         return false
+    }
+
+    //0+90 格式
+    try_parse_random_number(str)
+    {
+        let arr = str.split("+")
+        let nums = []
+        for (let one of arr)
+        {
+            nums.push(Number(one))
+        }
+
+        return nums
     }
 }

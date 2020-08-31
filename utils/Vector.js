@@ -1,9 +1,14 @@
+/**
+ * 魔改过的 Vector，没办法谁让crazystorm没有长度也可以设置角度。。
+ */
 module.exports = class Vector
 {
     constructor(x, y)
     {
         this.x = x || 0;
         this.y = y || 0;
+
+        this.__temp_angle = 0
     }
     getLength()
     {
@@ -16,6 +21,12 @@ module.exports = class Vector
     setAngle(angle) 
     {
         let r = this.getLength();
+        if (r == 0)
+        {
+            this.__temp_angle = angle
+            return
+        }
+
         this.x = r * Math.cos(angle);
         this.y = r * Math.sin(angle);
     }
@@ -110,7 +121,12 @@ module.exports = class Vector
     setLength(len)
     {
         let m = this.getLength();
-        if (m != 0)
+        if (m == 0)
+        {
+            this.x = len
+            this.setAngle(this.__temp_angle)
+        }
+        else
         {
             this.x = this.x * len / m;
             this.y = this.y * len / m;
@@ -156,6 +172,14 @@ module.exports = class Vector
         ret.setLength(len)
 
         return ret
+    }
+
+    compare_equal(vec)
+    {
+        if (this.x == vec.x && this.y == vec.y)
+            return true
+
+        return false
     }
 
     clone()

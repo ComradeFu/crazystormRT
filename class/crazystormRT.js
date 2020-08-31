@@ -57,14 +57,14 @@ class CrazyStormRT
     //进行跳动
     update()
     {
-        if (this.frame_count >= this.total_frame)
+        if (this.frame_count > this.total_frame)
             return false
-
-        this.frame_count++
 
         this.root.update()
 
-        if (this.frame_count >= this.total_frame)
+        this.frame_count++
+
+        if (this.frame_count > this.total_frame)
         {
             this.stop()
             return false
@@ -77,6 +77,12 @@ class CrazyStormRT
     {
         //重置 framecout
         this.frame_count = 0
+
+        //重新生成新的 center
+        this.center.destroy()
+
+        this.center = new CrazyCenter(this, this.config.center)
+        this.root.add_child(this.center)
 
         if (this.on_stop)
         {

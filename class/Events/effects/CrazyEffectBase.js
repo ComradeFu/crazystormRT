@@ -1,6 +1,7 @@
 /**
  * 事件的效果基类
  */
+const CrazyNumber = require("./../../CrazyNumber")
 module.exports = class CrazyEffectBase
 {
     constructor(group, conf)
@@ -8,15 +9,19 @@ module.exports = class CrazyEffectBase
         this.group = group
         this.obj = group.obj
 
-        this.effect = conf.effect
+        this.effect = Object.assign({}, conf.effect)
+
+        let rand_number = new CrazyNumber(...this.effect.target_val)
+        this.effect.target_val = rand_number.val
 
         this.frame_count = 0
 
         this.effect_change = conf.effect_change
-        this.trans_frame = conf.trans_frame + 1  // + 1是因为，似乎 CrazyStorm 的计算
+        this.trans_frame = conf.trans_frame //
         this.trigger_times = conf.trigger_times
 
-        this.origin_val = this.get_origin_val()
+        //启动标志
+        this.started = false
     }
 
     static get_name()
@@ -24,10 +29,25 @@ module.exports = class CrazyEffectBase
 
     }
 
-    //获取当时的值
-    get_origin_val()
+    //开始
+    start()
     {
-        throw new Error("must override get_origin_val function.")
+        this.started = true
+        this.origin_val = this.__get_origin_val()
+    }
+
+    //获取当时的值
+    __get_origin_val()
+    {
+        let func_name = `get_origin_val_${this.obj.tp}`
+        let func = this[func_name] || this.get_origin_val
+        if (!func)
+        {
+            global.console.error(`${this.get_name()} 效果，没有实现对 ${this.obj.tp} 类型的 get_origin_val 函数`)
+            return
+        }
+
+        return func.call(this)
     }
 
     //获取当前的效果值（不一定都用得上，有些效果是直接生效的）
@@ -67,7 +87,7 @@ module.exports = class CrazyEffectBase
     {
         try
         {
-            this.do_effect()
+            this.__do_effect()
         }
         catch (e)
         {
@@ -77,14 +97,24 @@ module.exports = class CrazyEffectBase
         this.frame_count++
 
         if (this.frame_count > this.trans_frame)
+        {
             return false
+        }
 
         return true
     }
 
     //返回 false 结束，返回 true 继续
-    do_effect()
+    __do_effect()
     {
-        throw Error("must override do_effect method.")
+        let func_name = `do_effect_${this.obj.tp}`
+        let func = this[func_name] || this.do_effect
+        if (!func)
+        {
+            global.console.error(`${this.get_name()} 效果，没有实现对 ${this.obj.tp} 类型的 do_effect 函数`)
+            return
+        }
+
+        return func.call(this)
     }
 }

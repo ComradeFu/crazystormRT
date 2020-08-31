@@ -17,7 +17,7 @@ module.exports = class CrazyEvent
         this.cur_trigger_times = 0
 
         //规定触发的次数
-        this.trigger_times = conf.trigger_times
+        this.trigger_times = conf.effect.trigger_times
 
         this.conds = {}
 
@@ -105,6 +105,7 @@ module.exports = class CrazyEvent
         }
 
         let effect = new cls(this.group, conf_effect)
+        effect.event = this
 
         this.active_effects.push(effect)
     }
@@ -116,6 +117,9 @@ module.exports = class CrazyEvent
         let first = this.active_effects[0]
         if (first)
         {
+            if (!first.started)
+                first.start()
+
             let state = first.tick()
             if (!state)
             {

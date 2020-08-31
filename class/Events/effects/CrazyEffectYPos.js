@@ -11,12 +11,12 @@ module.exports = class CrazyEffectLife extends CrazyEffectBase
     }
 
     //获取当时的值
-    get_origin_val()
+    get_origin_val_bullet()
     {
         return this.obj.pos[1]
     }
 
-    do_effect()
+    do_effect_bullet()
     {
         let val = this.get_cur_val()
         this.obj.set_pos([this.obj.pos[0], val])

@@ -3,7 +3,7 @@
  * 能自我进行跳动运动，并更新位置
  */
 const Vector = require("../utils/Vector")
-const { safe_call, random, angle2rad, rad2angle } = require("../utils/function")
+const { safe_call, lerp, angle2rad, rad2angle } = require("../utils/function")
 
 module.exports = class CrazyObject
 {
@@ -33,11 +33,11 @@ module.exports = class CrazyObject
         //速度
         let speed = info.speed || 0
         let speed_rand = info.speed_rand || 0
-        speed += random(0, speed_rand + 1)
+        speed += lerp(-speed_rand, speed_rand, Math.random())
 
         let speed_angle = info.speed_angle || 0
         let speed_angle_rand = info.speed_angle_rand || 0
-        speed_angle += random(0, speed_angle_rand + 1)
+        speed_angle += lerp(-speed_angle_rand, speed_angle_rand, Math.random())
 
         this.speed = new Vector(speed, 0)
         this.speed.setAngle(angle2rad(speed_angle))
@@ -50,11 +50,11 @@ module.exports = class CrazyObject
         //加速度
         let speed_acc = info.speed_acc || 0
         let speed_acc_rand = info.speed_acc_rand || 0
-        speed_acc += random(0, speed_acc_rand + 1)
+        speed_acc += lerp(-speed_acc_rand, speed_acc_rand, Math.random())
 
         let speed_acc_angle = info.speed_acc_angle || 0
         let speed_acc_angle_random = info.speed_acc_angle_random || 0
-        speed_acc_angle += random(0, speed_acc_angle_random + 1)
+        speed_acc_angle += lerp(-speed_acc_angle_random, speed_acc_angle_random, Math.random())
 
         this.speed_acc = new Vector(speed_acc, 0)
         this.speed_acc.setAngle(angle2rad(speed_acc_angle))
@@ -95,16 +95,50 @@ module.exports = class CrazyObject
         let old_pos = this.pos
         this.pos = pos
 
-        safe_call(this.on_set_pos.bind(this), pos)
+        safe_call(this.on_set_pos.bind(this), old_pos, pos)
 
         let offset = pos.subtractNew(old_pos)
         for (let id in this.children)
         {
             let child = this.children[id]
-            let new_pos = child.pos.add(offset)
+            let new_pos = child.pos.addNew(offset)
 
             child.set_pos(new_pos)
         }
+    }
+
+    set_local_pos(pos)
+    {
+        let father = this.father
+        if (!father)
+        {
+            return this.set_pos(pos)
+        }
+
+        let world = father.pos.addNew(pos)
+        this.set_pos(world)
+    }
+
+    get_local_pos()
+    {
+        let father = this.father
+        if (!father)
+        {
+            return this.pos
+        }
+
+        let local = this.pos.subtractNew(father.pos)
+        return local
+    }
+
+    to_local_pos(pos)
+    {
+        return pos.subtractNew(this.pos)
+    }
+
+    to_world_pos(pos)
+    {
+        return this.pos.addNew(pos)
     }
 
     on_set_pos()
@@ -265,8 +299,12 @@ module.exports = class CrazyObject
 
         //速度缩放
         let speed = this.speed.hadamardProductNew(this.speed_scale)
-
         let new_pos_vector = this.pos.addNew(speed)
+
+        //优化返回
+        if (new_pos_vector.compare_equal(old_pos))
+            return
+
         this.set_pos(new_pos_vector)
 
         if (this.face_speed_angle)
@@ -311,7 +349,7 @@ module.exports = class CrazyObject
             return
 
         let frame_count = this.frame_count
-        if (frame_count > this.life + 1)
+        if (frame_count > this.life)
         {
             //开始销毁程序
             this.destroy()

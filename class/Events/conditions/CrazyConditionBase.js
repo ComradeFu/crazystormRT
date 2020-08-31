@@ -37,11 +37,11 @@ module.exports = class CrazyConditionBase
         switch (this.op)
         {
             case ">":
-                return this.val > val
+                return val > this.val
             case "<":
-                return this.val < val
+                return val < this.val
             case "=":
-                return this.val == val
+                return val == this.val
             default:
                 throw new Error(`unknow event condition op ${this.op}`)
         }
