@@ -37,8 +37,7 @@ module.exports = class BulletView extends CrazyBulletView
 
         //透明度
         let alpha = bullet.conf.alpha
-        view.alpha = alpha;
-        fight.push_view(battle, "change_alpha", view.id, alpha);
+        this.on_set_alpha(alpha)
 
         //色相
         if (global.enable_rgb)
@@ -108,5 +107,15 @@ module.exports = class BulletView extends CrazyBulletView
         // view.scale = [scale_x, scale_y]
         view.scale = [scale_y, scale_x]
         fight.push_view(battle, "update_scale", view.id);
+    }
+
+    on_set_alpha(alpha)
+    {
+        let fight = this.fight
+        let battle = this.battle
+
+        let view = this.view
+        view.alpha = alpha;
+        fight.push_view(battle, "change_alpha", view.id, alpha);
     }
 }

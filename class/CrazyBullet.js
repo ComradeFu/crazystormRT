@@ -23,6 +23,9 @@ module.exports = class CrazyBullet extends CrazyObject
         //宽高比
         this.scale = new Vector(conf.scale_x || 1, conf.scale_y || 1)
 
+        //透明度
+        this.alpha = conf.alpha
+
         this.conf = conf
 
         //子弹的view类
@@ -32,6 +35,16 @@ module.exports = class CrazyBullet extends CrazyObject
         this.init_event_group()
 
         // global.console.log(`bullet ${this.id} create !`)
+
+        //子弹的life要做一次修改，跟消除子弹
+        this.erase_effect = conf.erase_effect
+        if (conf.erase_effect)
+        {
+            this.erase_effect_time = 20 //10帧来让它消失
+
+            this.origin_life = this.life
+            this.life += this.erase_effect_time
+        }
 
         //同时，将绑定的子弹发射器，给绑到子弹
         if (conf.bounds)
@@ -63,6 +76,28 @@ module.exports = class CrazyBullet extends CrazyObject
         //更新发射生成
         if (this.bullet_emmiter_generator)
             this.bullet_emmiter_generator.update()
+
+        //更新死亡动作
+        this.check_erase_effect()
+    }
+
+    check_erase_effect()
+    {
+        if (!this.origin_life)
+            return
+
+        let past_time = this.frame_count - this.origin_life
+        if (past_time < 0)
+            return
+
+        //比例
+        let factor = (this.erase_effect_time - past_time) / this.erase_effect_time
+
+        //缩放效果
+        this.set_scale(new Vector(factor, factor))
+
+        //透明度
+        this.set_alpha(factor)
     }
 
     set_view(view)
@@ -86,6 +121,21 @@ module.exports = class CrazyBullet extends CrazyObject
             return
 
         this.view.on_set_scale(scale)
+    }
+
+    set_alpha(alpha)
+    {
+        this.alpha = alpha
+
+        this.on_set_alpha(alpha)
+    }
+
+    on_set_alpha(alpha)
+    {
+        if (!this.view)
+            return
+
+        this.view.on_set_alpha(alpha)
     }
 
     on_add(...args)
