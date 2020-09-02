@@ -3,6 +3,7 @@
  */
 const CrazyObject = require("./CrazyObect")
 const CrazyLayer = require("./CrazyLayer")
+const Vector = require("../../common/Vector")
 module.exports = class CrazyCenter extends CrazyObject
 {
     constructor(rt, config)
@@ -26,6 +27,9 @@ module.exports = class CrazyCenter extends CrazyObject
 
             this.layers[id] = layer
             this.add_child(layer)
+
+            //紧贴
+            layer.set_local_pos(new Vector(0, 0))
         }
     }
 }

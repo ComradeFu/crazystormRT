@@ -421,7 +421,11 @@ module.exports = class CrazyConfig
         let nums = []
         for (let one of arr)
         {
-            nums.push(Number(one))
+            //我已经吐槽无能了。。
+            let num = Number(one)
+            if (isNaN(num))
+                num = one
+            nums.push(num)
         }
 
         return nums

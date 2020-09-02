@@ -115,16 +115,22 @@ module.exports = class CrazyEvent
     {
         //跳动第一个生效的effect
         let first = this.active_effects[0]
-        if (first)
+        while (first)
         {
             if (!first.started)
                 first.start()
 
             let state = first.tick()
-            if (!state)
+            if (state)
+            {
+                //不再跳动
+                first = undefined
+            }
+            else
             {
                 //说明结束，将其删除
                 this.active_effects.splice(0, 1)
+                first = this.active_effects[0]
             }
         }
 

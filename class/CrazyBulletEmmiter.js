@@ -15,6 +15,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
     {
         super(rt, conf)
 
+        this.eid = conf.eid
         this.layer_id = conf.layer_id
 
         //目前是给事件系统所使用
@@ -84,8 +85,10 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
     }
 
     //发动一次子弹
-    emmit_bullets()
+    emmit_bullets(target)
     {
+        target = target || this //可以是帮别人发射
+
         //发射角度
         let bullet_count = this.bullet_count.val
         let range = this.range.val
@@ -105,7 +108,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
 
         //发射位置
         let shoot_pos = this.shoot_pos.clone()
-        this.trans_pos(shoot_pos) //转换一次自身跟自机
+        this.trans_pos(target, shoot_pos) //转换一次自身跟自机
         shoot_pos.x += lerp(-this.shoot_pos_rand.x, this.shoot_pos_rand.x, Math.random())
         shoot_pos.y += lerp(-this.shoot_pos_rand.y, this.shoot_pos_rand.y, Math.random())
 
@@ -177,6 +180,20 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
         }
     }
 
+    //在绑定的发射器上进行子弹发射
+    emmit_bullets_in_bound()
+    {
+        //layer
+        let layer = this.father
+        let source = layer.emmiters[this.bound_id]
+        let bullets = source.bullets
+
+        for (let id in bullets)
+        {
+            this.emmit_bullets(bullets[id])
+        }
+    }
+
     //发射
     shoot_bullet(bullet_info)
     {
@@ -200,12 +217,12 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
     }
 
     //转换坐标
-    trans_pos(pos)
+    trans_pos(target, pos)
     {
         let rt = this.rt
         if (pos.x == Define.SELF_POS)
         {
-            pos.x = this.pos.x
+            pos.x = target.pos.x
         }
         else if (pos.x == Define.SELF_PLANE_POS)
         {
@@ -214,7 +231,7 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
 
         if (pos.y == Define.SELF_POS)
         {
-            pos.y = this.pos.y
+            pos.y = target.pos.y
         }
         else if (pos.y == Define.SELF_PLANE_POS)
         {
@@ -256,7 +273,10 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
 
             this.emmited_bullets++
             //发射一次子弹
-            this.emmit_bullets()
+            if (this.bound_id == -1 || this.is_deep_bound)
+                this.emmit_bullets()
+            else
+                this.emmit_bullets_in_bound()
         }
     }
 }

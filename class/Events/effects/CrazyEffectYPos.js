@@ -3,7 +3,7 @@
  */
 const CrazyEffectBase = require("./CrazyEffectBase")
 
-module.exports = class CrazyEffectLife extends CrazyEffectBase
+module.exports = class CrazyEffectYPos extends CrazyEffectBase
 {
     static get_name()
     {
@@ -11,14 +11,14 @@ module.exports = class CrazyEffectLife extends CrazyEffectBase
     }
 
     //获取当时的值
-    get_origin_val_bullet()
+    get_origin_val()
     {
-        return this.obj.pos[1]
+        return this.obj.pos.y
     }
 
-    do_effect_bullet()
+    do_effect()
     {
         let val = this.get_cur_val()
-        this.obj.set_pos([this.obj.pos[0], val])
+        this.obj.set_pos([this.obj.pos.x, val])
     }
 }

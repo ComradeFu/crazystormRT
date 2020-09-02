@@ -10,11 +10,9 @@ module.exports = class CrazyEffectBase
         this.obj = group.obj
 
         this.effect = Object.assign({}, conf.effect)
+        this.effect.target_val = this.get_target_val(this.effect.target_val)
 
-        let rand_number = new CrazyNumber(...this.effect.target_val)
-        this.effect.target_val = rand_number.val
-
-        this.frame_count = 0
+        this.frame_count = 1 //对，第一次就会变化。。
 
         this.effect_change = conf.effect_change
         this.trans_frame = conf.trans_frame //
@@ -27,6 +25,12 @@ module.exports = class CrazyEffectBase
     static get_name()
     {
 
+    }
+
+    get_target_val(conf)
+    {
+        let rand_number = new CrazyNumber(...conf)
+        return rand_number.val
     }
 
     //开始

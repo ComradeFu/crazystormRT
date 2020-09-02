@@ -1,24 +1,24 @@
 /**
- * x 坐标效果，三种，减少、增加、变化到
+ * 发射角度变化
  */
 const CrazyEffectBase = require("./CrazyEffectBase")
 
-module.exports = class CrazyEffectXPos extends CrazyEffectBase
+module.exports = class CrazyEffectAngle extends CrazyEffectBase
 {
     static get_name()
     {
-        return "X坐标"
+        return "朝向"
     }
 
     //获取当时的值
     get_origin_val()
     {
-        return this.obj.pos.x
+        return this.obj.angle
     }
 
     do_effect()
     {
         let val = this.get_cur_val()
-        this.obj.set_pos([val, this.obj.pos.y])
+        this.obj.set_angle(val)
     }
 }

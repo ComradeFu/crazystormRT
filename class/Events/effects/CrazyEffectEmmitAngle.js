@@ -13,12 +13,12 @@ module.exports = class CrazyEffectEmmitAngle extends CrazyEffectBase
     //获取当时的值
     get_origin_val()
     {
-        return this.obj.bullet_offset_angle
+        return this.obj.bullet_offset_angle.base
     }
 
     do_effect()
     {
         let val = this.get_cur_val()
-        this.obj.bullet_offset_angle = val
+        this.obj.bullet_offset_angle.base = val
     }
 }

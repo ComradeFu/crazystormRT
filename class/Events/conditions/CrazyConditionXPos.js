@@ -19,6 +19,6 @@ module.exports = class CrazyConditionXPos extends CrazyConditionBase
     //获取比较的值
     get_compare_val()
     {
-        return this.obj.pos[0]
+        return this.obj.pos.x
     }
 }

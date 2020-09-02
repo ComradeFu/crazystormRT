@@ -23,7 +23,7 @@ module.exports = class CrazyObject
 
         this.pos = new Vector(0, 0)
 
-        //位置（都是世界坐标）
+        //位置（都是世界坐标）如果不指定，默认跟父节点
         if (info.pos)
             this.set_pos(info.pos)
 
@@ -180,7 +180,7 @@ module.exports = class CrazyObject
         for (let id in this.children)
         {
             let child = this.children[id]
-            child.on_destroy()
+            child.destroy()
         }
 
         let father = this.father
@@ -272,9 +272,6 @@ module.exports = class CrazyObject
     {
         this.frame_count++
 
-        //事件
-        this.on_event("tick")
-
         this.update_pos()
         this.update_speed()
 
@@ -288,6 +285,9 @@ module.exports = class CrazyObject
         }
 
         this.update_life()
+
+        //事件
+        this.on_event("tick")
 
         safe_call(this.on_update.bind(this), tick)
     }
@@ -370,13 +370,14 @@ module.exports = class CrazyObject
     //透传事件
     trigger_object_event(event_name, ...args)
     {
-        this.on_event(event_name, ...args)
         //遍历子节点进行，所有的事件都是透穿
         for (let id in this.children)
         {
             let child = this.children[id]
             safe_call(child.trigger_object_event.bind(child), event_name, ...args)
         }
+
+        this.on_event(event_name, ...args)
     }
 
     on_event(event_name, ...args)

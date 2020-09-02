@@ -13,13 +13,16 @@ module.exports = class BulletView extends CrazyBulletView
         let battle = this.battle = info.battle
         let owner = this.owner = info.owner
 
+        let offset_x = this.offset_x = info.offset_x
+        let offset_y = this.offset_y = info.offset_y
+
         this.pos_scale = new Vector(info.pos_scale_x, info.pos_scale_y)
 
         let pos = bullet.pos
 
         //新建一个子弹出来
         let bullet_info = {
-            pos: [pos.x * info.pos_scale_x, pos.y * info.pos_scale_y],
+            pos: [pos.x * info.pos_scale_x + offset_x, pos.y * info.pos_scale_y + offset_y],
             camp: owner.camp,
             owner: owner,
             ai_type: "m/crazystorm_bullet",
@@ -49,6 +52,15 @@ module.exports = class BulletView extends CrazyBulletView
             // o.clear = false;
             fight.push_view(battle, "colorfilter", view.id, o);
         }
+
+        //渲染模式
+        if (bullet.conf.highlight_blend_effect)
+        {
+            fight.push_view(battle, "change_blend_mode", view.id, "lighter");
+        }
+
+        //拖影效果
+
 
         view.on_destroy = function ()
         {
@@ -81,8 +93,8 @@ module.exports = class BulletView extends CrazyBulletView
         new_pos_clone.hadamardProduct(this.pos_scale)
 
         //设置子弹的位置
-        let pos_x = new_pos_clone.x
-        let pos_y = new_pos_clone.y
+        let pos_x = new_pos_clone.x + this.offset_x
+        let pos_y = new_pos_clone.y + this.offset_y
 
         let target = this.view
 

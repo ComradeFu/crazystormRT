@@ -148,9 +148,6 @@ module.exports = class CrazyBullet extends CrazyObject
 
     on_remove(...args)
     {
-        let emmiter = this.emmiter
-        delete emmiter.bullets[this.id]
-
         if (!this.view)
             return
 
@@ -176,6 +173,9 @@ module.exports = class CrazyBullet extends CrazyObject
 
     on_destroy()
     {
+        let emmiter = this.emmiter
+        delete emmiter.bullets[this.id]
+
         if (!this.view)
             return
 

@@ -11,6 +11,7 @@
 const CrazyConfig = require("./CrazyConfig")
 const CrazyCenter = require("./CrazyCenter")
 const CrazyObject = require("./CrazyObect")
+const Vector = require("../utils/Vector")
 class CrazyStormRT 
 {
     constructor(config)
@@ -41,8 +42,8 @@ class CrazyStormRT
         this.total_frame = this.config.total_frame
         this.desc = this.config.desc
 
-        this.center = new CrazyCenter(this, this.config.center)
-        this.root.add_child(this.center)
+        //记下来当时的 center x y （计算发射器坐标用）
+        this.center_pos = new Vector(...this.config.center.pos)
     }
 
     //创建battle有关的obj
@@ -60,6 +61,11 @@ class CrazyStormRT
         if (this.frame_count > this.total_frame)
             return false
 
+        if (this.frame_count == 0)
+        {
+            this.start()
+        }
+
         this.root.update()
 
         this.frame_count++
@@ -73,6 +79,18 @@ class CrazyStormRT
         return true
     }
 
+    start()
+    {
+        //重新生成
+        this.center = new CrazyCenter(this, this.config.center)
+        this.root.add_child(this.center)
+
+        if (this.on_start)
+        {
+            this.on_start()
+        }
+    }
+
     stop()
     {
         //重置 framecout
@@ -80,9 +98,6 @@ class CrazyStormRT
 
         //重新生成新的 center
         this.center.destroy()
-
-        this.center = new CrazyCenter(this, this.config.center)
-        this.root.add_child(this.center)
 
         if (this.on_stop)
         {

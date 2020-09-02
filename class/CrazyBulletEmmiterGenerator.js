@@ -60,10 +60,19 @@ module.exports = class CrazyBulletEmmiterGenerator
         let emmiter = new this.CrazyBulletEmmiter(owner.rt, front)
         owner.add_child(emmiter)
 
+        let emmiters = owner.emmiters
+        if (!emmiters)
+        {
+            emmiters = owner.emmiters = {}
+        }
+        emmiters[emmiter.eid] = emmiter
+
         //坐标
         if (front.local_pos)
         {
             emmiter.set_local_pos(front.local_pos)
         }
+
+        this.try_create_emmiter()
     }
 }
