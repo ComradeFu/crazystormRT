@@ -17,7 +17,9 @@ let modules_arr = [
     require("./CrazyEffectScaleY"),
     require("./CrazyEffectInterval"),
     require("./CrazyEffectAngle"),
-    require("./CrazyEffectAlpha")
+    require("./CrazyEffectAlpha"),
+    require("./CrazyEffectEmmitRadius"),
+    require("./CrazyEffectEmmitRadiusAngle"),
 ]
 
 for (let mod of modules_arr)
