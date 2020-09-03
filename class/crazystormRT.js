@@ -21,6 +21,9 @@ class CrazyStormRT
         //object id helper
         this.id_helper = 0
 
+        //额外参数
+        this.emmiter_extra_info = {}
+
         //根节点
         this.root = new CrazyObject(this)
         this.center = null
@@ -115,6 +118,18 @@ class CrazyStormRT
     set_bullet_view_class(view_class)
     {
         this.bullet_view_class = view_class
+    }
+
+    //设置发射器的额外子弹参数
+    set_emmiter_extra_info(id, info)
+    {
+        let emmiter_info = this.emmiter_extra_info[id]
+        if (!emmiter_info)
+        {
+            emmiter_info = this.emmiter_extra_info[id] = {}
+        }
+
+        Object.assign(emmiter_info, info)
     }
 }
 

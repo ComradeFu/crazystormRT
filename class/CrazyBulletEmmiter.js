@@ -160,7 +160,8 @@ module.exports = class CrazeBulletEmmiter extends CrazyObject
             //发射点的半径 angle
             let radius_angle = this.emmit_angle(bullet_count, range, radius_offset_angle, index)
 
-            let shoot_pos_vec = new Vector(radius)
+            let shoot_pos_vec = new Vector()
+            shoot_pos_vec.setLength(radius)
             shoot_pos_vec.setAngle(angle2rad(radius_angle))
 
             shoot_pos_vec.add(shoot_pos)

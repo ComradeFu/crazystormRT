@@ -9,6 +9,10 @@ module.exports = class BulletView extends CrazyBulletView
 
         this.bullet = bullet
 
+        //
+        let extra_info = bullet.rt.emmiter_extra_info[bullet.emmiter.eid] || {}
+
+
         let fight = this.fight = info.fight
         let battle = this.battle = info.battle
         let owner = this.owner = info.owner
@@ -31,7 +35,8 @@ module.exports = class BulletView extends CrazyBulletView
             },
             view_angle: bullet.angle,
         }
-        bullet_info.obj_id = 17700 + bullet.conf.type
+        bullet_info.obj_id = extra_info.bullet || 17701
+        global.console.log(`obj id :${bullet_info.obj_id}`)
         let view = fight.generate_bullet(this.battle, owner, bullet_info);
         this.view = view
 
