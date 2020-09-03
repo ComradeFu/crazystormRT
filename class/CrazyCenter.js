@@ -3,7 +3,7 @@
  */
 const CrazyObject = require("./CrazyObect")
 const CrazyLayer = require("./CrazyLayer")
-const Vector = require("../../common/Vector")
+const Vector = require("../utils/Vector")
 module.exports = class CrazyCenter extends CrazyObject
 {
     constructor(rt, config)

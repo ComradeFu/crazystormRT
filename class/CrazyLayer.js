@@ -3,7 +3,7 @@
  */
 const CrazyObject = require("./CrazyObect")
 const CrazyBulletEmmiterGenerator = require("./CrazyBulletEmmiterGenerator")
-const Vector = require("../../common/Vector")
+const Vector = require("../utils/Vector")
 const { deep_clone } = require("../utils/function")
 
 module.exports = class CrazyLayer extends CrazyObject

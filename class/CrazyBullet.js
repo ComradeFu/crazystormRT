@@ -6,7 +6,7 @@ const CrazyBulletView = require("./CrazyBulletView")
 const CrazyEventGroup = require("./Events/CrazyEventGroup")
 const CrazyBulletEmmiterGenerator = require("./CrazyBulletEmmiterGenerator")
 
-const Vector = require("../../common/Vector")
+const Vector = require("../utils/Vector")
 
 module.exports = class CrazyBullet extends CrazyObject
 {

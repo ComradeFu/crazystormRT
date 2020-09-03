@@ -128,7 +128,7 @@ module.exports = class CrazyConfig
         {
             let line = lines.splice(0, 1)[0]
             let items = line.split(",")
-            global.console.log(`ret :[${items[73]}][ ]`)
+            
             let bullet_emitter = {}
             let keys = ["id", "layer_id", "is_bound", "bound_id", "is_relative_bound_direction", "abandon1", "pos_x", "pos_y",
                 "start_frame", "stop_frame", "emmite_pos_x", "emmite_pos_y", "emmite_radius", "emmite_offset_angle",
@@ -145,8 +145,6 @@ module.exports = class CrazyConfig
                 "inverse_force_effect", "force_field_effect", "is_deep_bound"]
 
             this.fill_items(bullet_emitter, keys, items)
-
-            global.console.log(`ret :[${bullet_emitter.is_deep_bound}][ ]`)
 
             //位置信息
             bullet_emitter.pos = [bullet_emitter.pos_x, bullet_emitter.pos_y]
@@ -364,12 +362,7 @@ module.exports = class CrazyConfig
             let key = keys[index]
             let val = items[index]
 
-            if (index == 73)
-                global.console.log(`before val [${val}] ${typeof (val)} ${val == "False"}`)
             val = obj[key] = this.get_val(val)
-
-            if (index == 73)
-                global.console.log(`after val [${val}] ${typeof (val)} ${val == "False"}`)
         }
     }
 
