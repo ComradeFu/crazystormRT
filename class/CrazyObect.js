@@ -39,7 +39,8 @@ module.exports = class CrazyObject
         let speed_angle_rand = info.speed_angle_rand || 0
         speed_angle += lerp(-speed_angle_rand, speed_angle_rand, Math.random())
 
-        this.speed = new Vector(speed, 0)
+        this.speed = new Vector()
+        this.speed.setLength(speed)
         this.speed.setAngle(angle2rad(speed_angle))
 
         //速度缩放
@@ -56,7 +57,8 @@ module.exports = class CrazyObject
         let speed_acc_angle_random = info.speed_acc_angle_random || 0
         speed_acc_angle += lerp(-speed_acc_angle_random, speed_acc_angle_random, Math.random())
 
-        this.speed_acc = new Vector(speed_acc, 0)
+        this.speed_acc = new Vector()
+        this.speed_acc.setLength(speed_acc)
         this.speed_acc.setAngle(angle2rad(speed_acc_angle))
 
         this.face_speed_angle = info.face_speed_angle
